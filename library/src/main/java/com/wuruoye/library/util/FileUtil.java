@@ -54,6 +54,14 @@ public class FileUtil {
         return false;
     }
 
+    public static boolean deleteFile(String filePath) {
+        return deleteFile(new File(filePath));
+    }
+
+    public static boolean deleteFile(File file) {
+        return file.delete();
+    }
+
     public static String getFilePathByUri(Context context, Uri uri) {
         String path = null;
         // 以 file:// 开头的

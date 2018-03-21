@@ -27,6 +27,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Presenter" />
+
+            <Button
+                android:id="@+id/btn_main_photo"
+                android:text="photo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

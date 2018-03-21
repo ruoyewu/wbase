@@ -5,6 +5,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
+    <TextView
+        android:padding="10dp"
+        android:text="horizontal layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="150dp">
@@ -66,6 +72,12 @@
                 android:layout_height="wrap_content" />
         </com.wuruoye.library.widget.SmartLinearLayout>
     </HorizontalScrollView>
+
+    <TextView
+        android:padding="10dp"
+        android:text="vertical layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <ScrollView
         android:layout_width="match_parent"

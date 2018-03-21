@@ -9,6 +9,7 @@
 
     <EditText
         android:id="@+id/et_presenter"
+        android:hint="input the round number"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

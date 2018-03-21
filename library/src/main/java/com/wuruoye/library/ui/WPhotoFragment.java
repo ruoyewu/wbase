@@ -87,7 +87,7 @@ public abstract class WPhotoFragment extends WBaseFragment implements IPhotoView
                     break;
             }
         } else {
-            onPermissionDeny("无权限");
+            onPhotoError("无权限");
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }

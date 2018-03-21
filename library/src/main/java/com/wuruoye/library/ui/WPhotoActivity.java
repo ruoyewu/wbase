@@ -9,6 +9,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
 
+import com.wuruoye.library.contract.WIPresenter;
 import com.wuruoye.library.model.WConfig;
 import com.wuruoye.library.util.FileUtil;
 
@@ -20,7 +21,7 @@ import java.util.List;
  * this file is to be the base activity of all activities who need use photo
  */
 
-public abstract class WPhotoActivity extends WBaseActivity implements IPhotoView{
+public abstract class WPhotoActivity<T extends WIPresenter> extends WBaseActivity<T> implements IPhotoView{
     // 是否剪裁
     private boolean mIsCrop = false;
     // 文件名
@@ -84,7 +85,7 @@ public abstract class WPhotoActivity extends WBaseActivity implements IPhotoView
                     break;
             }
         } else {
-            onPermissionDeny("无权限");
+            onPhotoError("无权限");
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
@@ -210,7 +211,7 @@ public abstract class WPhotoActivity extends WBaseActivity implements IPhotoView
         FileUtil.checkFile(mFilePath);
         File file = new File(mFilePath);
         Uri outUri = FileProvider.getUriForFile(this, WConfig.PROVIDER_AUTHORITY, file);
-        Intent intent = new Intent("com.android.camera.action.PHOTO_CROP");
+        Intent intent = new Intent("com.android.camera.action.CROP");
         intent.setDataAndType(uri, "image/*");
         intent.putExtra("crop", true);
         intent.putExtra("aspectX", mAspectX);
@@ -230,6 +231,10 @@ public abstract class WPhotoActivity extends WBaseActivity implements IPhotoView
                     Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                             | Intent.FLAG_GRANT_READ_URI_PERMISSION);
         }
-        startActivityForResult(intent, CROP_PHOTO);
+        if (resolveInfoList.size() > 0) {
+            startActivityForResult(intent, CROP_PHOTO);
+        }else {
+            onPhotoError("there is no activity to crop a photo");
+        }
     }
 }

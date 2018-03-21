@@ -16,5 +16,5 @@ public interface IPhotoView {
     void takePhoto(String filePath, int aX, int aY, int oX, int oY);
     void cropPhoto(String from, String to, int aX, int aY, int oX, int oY);
     void onPhotoBack(String photoPath);
-    void onPermissionDeny(String info);
+    void onPhotoError(String info);
 }
