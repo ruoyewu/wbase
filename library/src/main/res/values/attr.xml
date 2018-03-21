@@ -6,4 +6,11 @@
             <enum name="vertical" value="0"/>
         </attr>
     </declare-styleable>
+
+    <declare-styleable name="HeartBeatView">
+        <attr name="heartColor" format="color"/>
+        <attr name="duration" format="integer"/>
+        <attr name="count" format="integer"/>
+        <attr name="press" format="float"/>
+    </declare-styleable>
 </resources>

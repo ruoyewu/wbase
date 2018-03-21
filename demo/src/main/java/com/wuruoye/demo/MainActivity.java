@@ -12,6 +12,7 @@ public class MainActivity extends WBaseActivity implements View.OnClickListener 
     private Button btnPresenter;
     private Button btnPhoto;
     private Button btnNet;
+    private Button btnHeart;
 
     @Override
     protected int getContentView() {
@@ -29,11 +30,13 @@ public class MainActivity extends WBaseActivity implements View.OnClickListener 
         btnPresenter = findViewById(R.id.btn_main_presenter);
         btnPhoto = findViewById(R.id.btn_main_photo);
         btnNet = findViewById(R.id.btn_main_net);
+        btnHeart = findViewById(R.id.btn_main_heart);
 
         btnSLL.setOnClickListener(this);
         btnPresenter.setOnClickListener(this);
         btnPhoto.setOnClickListener(this);
         btnNet.setOnClickListener(this);
+        btnHeart.setOnClickListener(this);
     }
 
     @Override
@@ -54,6 +57,10 @@ public class MainActivity extends WBaseActivity implements View.OnClickListener 
                 break;
             case R.id.btn_main_net:
                 intent = new Intent(this, NetActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.btn_main_heart:
+                intent = new Intent(this, HeartBeatActivity.class);
                 startActivity(intent);
                 break;
         }

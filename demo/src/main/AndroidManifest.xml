@@ -26,6 +26,7 @@
         <activity android:name=".PresenterActivity" />
         <activity android:name=".PhotoActivity" />
         <activity android:name=".NetActivity" />
+        <activity android:name=".HeartBeatActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

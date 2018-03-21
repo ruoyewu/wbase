@@ -41,6 +41,12 @@
                 android:text="net"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/btn_main_heart"
+                android:text="heart beat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
