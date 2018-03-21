@@ -1,7 +1,7 @@
 package com.wuruoye.library.util.net;
 
 import android.support.annotation.NonNull;
-import android.util.ArrayMap;
+import android.support.v4.util.ArrayMap;
 
 import com.wuruoye.library.model.Listener;
 import com.wuruoye.library.model.WConfig;

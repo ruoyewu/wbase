@@ -8,6 +8,7 @@
     <TextView
         android:padding="10dp"
         android:text="horizontal layout"
+        android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
@@ -76,6 +77,7 @@
     <TextView
         android:padding="10dp"
         android:text="vertical layout"
+        android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

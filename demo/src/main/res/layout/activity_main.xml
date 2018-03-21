@@ -5,6 +5,8 @@
     android:layout_height="match_parent"
     android:paddingStart="16dp"
     android:paddingEnd="16dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
     tools:context="com.wuruoye.demo.MainActivity">
 
     <ScrollView
@@ -31,6 +33,12 @@
             <Button
                 android:id="@+id/btn_main_photo"
                 android:text="photo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/btn_main_net"
+                android:text="net"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </LinearLayout>
