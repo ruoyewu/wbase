@@ -13,7 +13,7 @@ repositories {
 把上面的 maven 地址放到`build.gradle`的`buildscript`和`allprojects`目录下，然后在模块`build.gradle`文件中加入：
 
 ```groovy
-implementation 'com.github.ruoyewu:wbase:0.0.1'
+implementation 'com.github.ruoyewu:wbase:0.0.3'
 ```
 
 把这段放到`build.gradle`文件的`dependencies`目录下，`sync project`即可。
