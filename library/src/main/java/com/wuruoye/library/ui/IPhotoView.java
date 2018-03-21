@@ -6,9 +6,9 @@ package com.wuruoye.library.ui;
  */
 
 public interface IPhotoView {
-    public static final int CHOOSE_PHOTO = 1;
-    public static final int TAKE_PHOTO = 2;
-    public static final int CROP_PHOTO = 3;
+    int CHOOSE_PHOTO = 1;
+    int TAKE_PHOTO = 2;
+    int CROP_PHOTO = 3;
 
     void choosePhoto();
     void choosePhoto(String filePath, int aX, int aY, int oX, int oY);

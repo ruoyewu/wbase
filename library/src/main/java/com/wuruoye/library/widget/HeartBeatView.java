@@ -149,7 +149,9 @@ public class HeartBeatView extends View {
         mCtrl[4] -= mStep / mCount * mDir;
         mCtrl[10] += mStep / mCount * mDir;
 
-        invalidate();
+        if (isShown()) {
+            invalidate();
+        }
     }
 
     @Override
