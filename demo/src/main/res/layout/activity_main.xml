@@ -1,71 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
     tools:context="com.wuruoye.demo.MainActivity">
 
-    <HorizontalScrollView
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="150dp">
+        android:layout_height="wrap_content">
 
-        <com.wuruoye.library.widget.SmartLinearLayout
-            android:background="#000000"
-            android:padding="10dp"
-            app:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-            <TextView
-                android:text="asdfjas;dfja;sdlf"
-                android:padding="10dp"
-                android:layout_margin="10dp"
-                android:background="#ffffff"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-            <TextView
-                android:text="asdfjas;dfja;sdlf"
-                android:padding="10dp"
-                android:layout_margin="10dp"
-                android:background="#ffffff"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-            <TextView
-                android:text="asdfjas;dfja;sdlf"
-                android:padding="10dp"
-                android:layout_margin="10dp"
-                android:background="#ffffff"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-            <TextView
-                android:text="asdfjas;dfja;sdlf"
-                android:padding="10dp"
-                android:layout_margin="10dp"
-                android:background="#ffffff"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-            <TextView
-                android:text="asdfjas;dfja;sdlf"
-                android:padding="10dp"
-                android:layout_margin="10dp"
-                android:background="#ffffff"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-            <TextView
-                android:text="asdfjas;dfja;sdlf"
-                android:padding="10dp"
-                android:layout_margin="10dp"
-                android:background="#ffffff"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-            <TextView
-                android:text="asdfjas;dfja;sdlf"
-                android:padding="10dp"
-                android:layout_margin="10dp"
-                android:background="#ffffff"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </com.wuruoye.library.widget.SmartLinearLayout>
-    </HorizontalScrollView>
+            <Button
+                android:id="@+id/btn_main_smart_linear_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="SmartLinearLayout" />
+
+            <Button
+                android:id="@+id/btn_main_presenter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Presenter" />
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

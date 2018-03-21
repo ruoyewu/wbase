@@ -1,0 +1,239 @@
+package com.wuruoye.library.ui;
+
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
+import android.os.Build;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.content.FileProvider;
+
+import com.wuruoye.library.model.WConfig;
+import com.wuruoye.library.util.FileUtil;
+
+import java.io.File;
+import java.util.List;
+
+import static android.app.Activity.RESULT_OK;
+
+/**
+ * Created by wuruoye on 2018/3/21.
+ * this file is to
+ */
+
+public abstract class WPhotoFragment extends WBaseFragment implements IPhotoView{
+
+    // 是否剪裁
+    private boolean mIsCrop = false;
+    // 文件名
+    private String mFilePath;
+    // 剪裁比例
+    private int mAspectX;
+    private int mAspectY;
+    // 剪裁输出
+    private int mOutputX;
+    private int mOutputY;
+    //
+    private Uri mCropUri;
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK){
+            Uri uri;
+            switch (requestCode){
+                case CHOOSE_PHOTO:
+                    uri = data.getData();
+                    if (mIsCrop){
+                        String filePath = FileUtil.getFilePathByUri(getContext(), uri);
+                        uri = FileProvider.getUriForFile(getContext(), WConfig.PROVIDER_AUTHORITY,
+                                new File(filePath));
+                        cropPhoto(uri);
+                    }else {
+                        String filePath = FileUtil.getFilePathByUri(getContext(), uri);
+                        onPhotoBack(filePath);
+                    }
+                    break;
+                case TAKE_PHOTO:
+                    if (mIsCrop) {
+                        uri = FileProvider.getUriForFile(getContext(), WConfig.PROVIDER_AUTHORITY,
+                                new File(mFilePath));
+                        cropPhoto(uri);
+                    }else {
+                        onPhotoBack(mFilePath);
+                    }
+                    break;
+                case CROP_PHOTO:
+                    onPhotoBack(mFilePath);
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+            switch (requestCode){
+                case CHOOSE_PHOTO:
+                    doChoosePhoto();
+                    break;
+                case TAKE_PHOTO:
+                    doTakePhoto();
+                    break;
+                case CROP_PHOTO:
+                    cropPhoto(mCropUri);
+                    break;
+            }
+        } else {
+            onPermissionDeny("无权限");
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    /**
+     * 从相册选取图片，需要剪裁
+     * @param filePath 输出文件名
+     * @param aX 剪裁比例 x
+     * @param aY 剪裁比例 y
+     * @param oX 输出大小 x
+     * @param oY 输出大小 y
+     */
+    public void choosePhoto(String filePath, int aX, int aY, int oX, int oY){
+        mIsCrop = true;
+        mFilePath = filePath;
+        mAspectX = aX;
+        mAspectY = aY;
+        mOutputX = oX;
+        mOutputY = oY;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(WConfig.FILE_PERMISSION, CHOOSE_PHOTO);
+        }else {
+            doChoosePhoto();
+        }
+    }
+
+    /**
+     * 相册选取图片，无需剪裁
+     */
+    public void choosePhoto(){
+        mIsCrop = false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(WConfig.FILE_PERMISSION, CHOOSE_PHOTO);
+        }else {
+            doChoosePhoto();
+        }
+    }
+
+    // 相册选取具体代码
+    private void doChoosePhoto(){
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(intent, CHOOSE_PHOTO);
+    }
+
+    /**
+     * 打开相机拍照，需要剪裁
+     * @param filePath 输出文件名
+     * @param aX 剪裁比例 x
+     * @param aY 剪裁比例 y
+     * @param oX 输出大小 x
+     * @param oY 输出大小 y
+     */
+    public void takePhoto(String filePath, int aX, int aY, int oX, int oY){
+        mIsCrop = true;
+        mFilePath = filePath;
+        mAspectX = aX;
+        mAspectY = aY;
+        mOutputX = oX;
+        mOutputY = oY;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(WConfig.CAMERA_PERMISSION, TAKE_PHOTO);
+        }else {
+            doTakePhoto();
+        }
+    }
+
+    /**
+     * 打开相机拍照，无需剪裁
+     * @param filePath 输出文件名
+     */
+    public void takePhoto(String filePath){
+        mIsCrop = false;
+        mFilePath = filePath;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(WConfig.CAMERA_PERMISSION, TAKE_PHOTO);
+        }else {
+            doTakePhoto();
+        }
+    }
+
+    private void doTakePhoto(){
+        FileUtil.checkFile(mFilePath);
+        File file = new File(mFilePath);
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        Uri uri;
+        if (Build.VERSION.SDK_INT >= 21) {
+            uri = FileProvider.getUriForFile(getContext(), WConfig.PROVIDER_AUTHORITY, file);
+        }else {
+            uri = Uri.fromFile(file);
+        }
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        startActivityForResult(intent, TAKE_PHOTO);
+    }
+
+    /**
+     * 剪裁照片
+     * @param fileFrom 源文件
+     * @param fileTo 目标文件
+     * @param aX 剪裁比例 x
+     * @param aY 剪裁比例 y
+     * @param oX 输出大小 x
+     * @param oY 输出大小 y
+     */
+    public void cropPhoto(String fileFrom, String fileTo, int aX, int aY, int oX, int oY){
+        mIsCrop = true;
+        mFilePath = fileTo;
+        mAspectX = aX;
+        mAspectY = aY;
+        mOutputX = oX;
+        mOutputY = oY;
+        mCropUri = FileProvider.getUriForFile(getContext(), WConfig.PROVIDER_AUTHORITY,
+                new File(fileFrom));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(WConfig.CAMERA_PERMISSION, CROP_PHOTO);
+        }else {
+            cropPhoto(mCropUri);
+        }
+    }
+
+    private void cropPhoto(Uri uri){
+        FileUtil.checkFile(mFilePath);
+        File file = new File(mFilePath);
+        Uri outUri = FileProvider.getUriForFile(getContext(), WConfig.PROVIDER_AUTHORITY, file);
+        Intent intent = new Intent("com.android.camera.action.PHOTO_CROP");
+        intent.setDataAndType(uri, "image/*");
+        intent.putExtra("crop", true);
+        intent.putExtra("aspectX", mAspectX);
+        intent.putExtra("aspectY", mAspectY);
+        intent.putExtra("outputX", mOutputX);
+        intent.putExtra("outputY", mOutputY);
+        intent.putExtra("return-date", false);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, outUri);
+
+        List<ResolveInfo> resolveInfoList = getContext().getPackageManager().queryIntentActivities(intent,
+                PackageManager.MATCH_DEFAULT_ONLY);
+        for (ResolveInfo info : resolveInfoList) {
+            String packageName = info.activityInfo.packageName;
+            getContext().grantUriPermission(packageName, uri,
+                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                        | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            getContext().grantUriPermission(packageName, outUri,
+                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                            | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
+        startActivityForResult(intent, CROP_PHOTO);
+    }
+}

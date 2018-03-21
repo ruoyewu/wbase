@@ -8,7 +8,7 @@ import android.content.Context;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
-import com.wuruoye.library.WBaseApp;
+import com.wuruoye.library.ui.WBaseApp;
 
 
 /**

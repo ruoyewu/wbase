@@ -5,7 +5,7 @@ package com.wuruoye.library.contract;
  * this file is to be interface of presenter
  */
 
-public interface IBasePresenter {
-    void attachView(IBaseView view);
+public interface WIPresenter {
+    void attachView(WIView view);
     void detachView();
 }

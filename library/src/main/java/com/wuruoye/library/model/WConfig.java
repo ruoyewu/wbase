@@ -4,16 +4,13 @@ import android.Manifest;
 import android.content.Context;
 import android.os.Environment;
 
-import com.wuruoye.library.util.net.OKHttpNet;
-import com.wuruoye.library.util.net.WNet;
-
 
 /**
  * Created by wuruoye on 2017/11/20.
  * this file is to be the config class of the app
  */
 
-public class Config {
+public class WConfig {
     public static String PACKAGE_NAME;
 
     public static void init(Context context) {
@@ -25,7 +22,7 @@ public class Config {
         VIDEO_PATH = APP_PATH + "video/";
         RECORD_PATH = APP_PATH + "record/";
         PROVIDER_AUTHORITY = PACKAGE_NAME + ".fileprovider";
-        BaseCache.init(PACKAGE_NAME);
+        WBaseCache.init(PACKAGE_NAME);
     }
 
     public static String APP_PATH;

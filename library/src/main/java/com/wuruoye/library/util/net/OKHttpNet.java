@@ -3,8 +3,8 @@ package com.wuruoye.library.util.net;
 import android.support.annotation.NonNull;
 import android.util.ArrayMap;
 
-import com.wuruoye.library.model.Config;
 import com.wuruoye.library.model.Listener;
+import com.wuruoye.library.model.WConfig;
 import com.wuruoye.library.util.FileUtil;
 
 import org.json.JSONException;
@@ -44,7 +44,7 @@ public class OKHttpNet implements IWNet {
     public OKHttpNet() {
         mCookies = new ArrayList<>();
         mClient = new OkHttpClient.Builder()
-                .connectTimeout(Config.CONNECT_TIME_OUT, TimeUnit.SECONDS)
+                .connectTimeout(WConfig.CONNECT_TIME_OUT, TimeUnit.SECONDS)
                 .cookieJar(new CookieJar() {
                     @Override
                     public void saveFromResponse(@NonNull HttpUrl url,

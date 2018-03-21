@@ -7,16 +7,11 @@ import java.lang.ref.WeakReference;
  * this file is to be the base presenter class
  */
 
-public class AbsPresenter<T extends IBaseView> implements IBasePresenter{
+public class WPresenter<T extends WIView> implements WIPresenter {
     private WeakReference<T> mViewRef;
 
-    enum Method{
-        NET,
-        LOCAL
-    }
-
     @Override
-    public void attachView(IBaseView view) {
+    public void attachView(WIView view) {
         mViewRef = new WeakReference<>((T) view);
     }
 

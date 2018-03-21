@@ -8,7 +8,7 @@ import android.content.SharedPreferences;
  * this file is to the base cache manager class
  */
 
-public abstract class BaseCache {
+public abstract class WBaseCache {
     private static String SP_NAME = "sp_name";
 
     public static void init(String name) {
@@ -19,7 +19,7 @@ public abstract class BaseCache {
 
     protected abstract void clearCache();
 
-    public BaseCache(Context context){
+    public WBaseCache(Context context){
         if (mSP == null){
             synchronized (this){
                 mSP = context.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);

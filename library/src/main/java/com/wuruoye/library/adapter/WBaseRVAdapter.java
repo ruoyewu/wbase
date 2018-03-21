@@ -10,12 +10,12 @@ import java.util.List;
  * this file is to
  */
 
-public abstract class BaseRVAdapter<T> extends RecyclerView.Adapter {
+public abstract class WBaseRVAdapter<T> extends RecyclerView.Adapter {
     private List<T> mDataList;
     private OnItemClickListener<T> mListener;
     private OnItemLongClickListener<T> mLongListener;
 
-    public BaseRVAdapter() {
+    public WBaseRVAdapter() {
         mDataList = new ArrayList<>();
     }
 

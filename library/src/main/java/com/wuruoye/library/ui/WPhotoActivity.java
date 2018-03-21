@@ -1,4 +1,4 @@
-package com.wuruoye.library;
+package com.wuruoye.library.ui;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,8 +9,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
 
-
-import com.wuruoye.library.model.Config;
+import com.wuruoye.library.model.WConfig;
 import com.wuruoye.library.util.FileUtil;
 
 import java.io.File;
@@ -21,14 +20,7 @@ import java.util.List;
  * this file is to be the base activity of all activities who need use photo
  */
 
-public abstract class AbsPhotoActivity extends AbsBaseActivity {
-    public static final int CHOOSE_PHOTO = 1;
-    public static final int TAKE_PHOTO = 2;
-    public static final int CROP_PHOTO = 3;
-
-    protected abstract void onPhotoBack(String photoPath);
-    protected abstract void onPhotoPermissionDeny(String info);
-
+public abstract class WPhotoActivity extends WBaseActivity implements IPhotoView{
     // 是否剪裁
     private boolean mIsCrop = false;
     // 文件名
@@ -52,7 +44,7 @@ public abstract class AbsPhotoActivity extends AbsBaseActivity {
                     uri = data.getData();
                     if (mIsCrop){
                         String filePath = FileUtil.getFilePathByUri(this, uri);
-                        uri = FileProvider.getUriForFile(this, Config.PROVIDER_AUTHORITY,
+                        uri = FileProvider.getUriForFile(this, WConfig.PROVIDER_AUTHORITY,
                                 new File(filePath));
                         cropPhoto(uri);
                     }else {
@@ -62,7 +54,7 @@ public abstract class AbsPhotoActivity extends AbsBaseActivity {
                     break;
                 case TAKE_PHOTO:
                     if (mIsCrop) {
-                        uri = FileProvider.getUriForFile(this, Config.PROVIDER_AUTHORITY,
+                        uri = FileProvider.getUriForFile(this, WConfig.PROVIDER_AUTHORITY,
                                 new File(mFilePath));
                         cropPhoto(uri);
                     }else {
@@ -92,7 +84,7 @@ public abstract class AbsPhotoActivity extends AbsBaseActivity {
                     break;
             }
         } else {
-            onPhotoPermissionDeny("无权限");
+            onPermissionDeny("无权限");
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
@@ -105,7 +97,7 @@ public abstract class AbsPhotoActivity extends AbsBaseActivity {
      * @param oX 输出大小 x
      * @param oY 输出大小 y
      */
-    protected void choosePhoto(String filePath, int aX, int aY, int oX, int oY){
+    public void choosePhoto(String filePath, int aX, int aY, int oX, int oY){
         mIsCrop = true;
         mFilePath = filePath;
         mAspectX = aX;
@@ -113,7 +105,7 @@ public abstract class AbsPhotoActivity extends AbsBaseActivity {
         mOutputX = oX;
         mOutputY = oY;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(Config.FILE_PERMISSION, CHOOSE_PHOTO);
+            requestPermissions(WConfig.FILE_PERMISSION, CHOOSE_PHOTO);
         }else {
             doChoosePhoto();
         }
@@ -122,10 +114,10 @@ public abstract class AbsPhotoActivity extends AbsBaseActivity {
     /**
      * 相册选取图片，无需剪裁
      */
-    protected void choosePhoto(){
+    public void choosePhoto(){
         mIsCrop = false;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(Config.FILE_PERMISSION, CHOOSE_PHOTO);
+            requestPermissions(WConfig.FILE_PERMISSION, CHOOSE_PHOTO);
         }else {
             doChoosePhoto();
         }
@@ -147,7 +139,7 @@ public abstract class AbsPhotoActivity extends AbsBaseActivity {
      * @param oX 输出大小 x
      * @param oY 输出大小 y
      */
-    protected void takePhoto(String filePath, int aX, int aY, int oX, int oY){
+    public void takePhoto(String filePath, int aX, int aY, int oX, int oY){
         mIsCrop = true;
         mFilePath = filePath;
         mAspectX = aX;
@@ -155,7 +147,7 @@ public abstract class AbsPhotoActivity extends AbsBaseActivity {
         mOutputX = oX;
         mOutputY = oY;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(Config.CAMERA_PERMISSION, TAKE_PHOTO);
+            requestPermissions(WConfig.CAMERA_PERMISSION, TAKE_PHOTO);
         }else {
             doTakePhoto();
         }
@@ -165,11 +157,11 @@ public abstract class AbsPhotoActivity extends AbsBaseActivity {
      * 打开相机拍照，无需剪裁
      * @param filePath 输出文件名
      */
-    protected void takePhoto(String filePath){
+    public void takePhoto(String filePath){
         mIsCrop = false;
         mFilePath = filePath;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(Config.CAMERA_PERMISSION, TAKE_PHOTO);
+            requestPermissions(WConfig.CAMERA_PERMISSION, TAKE_PHOTO);
         }else {
             doTakePhoto();
         }
@@ -181,7 +173,7 @@ public abstract class AbsPhotoActivity extends AbsBaseActivity {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         Uri uri;
         if (Build.VERSION.SDK_INT >= 21) {
-            uri = FileProvider.getUriForFile(this, Config.PROVIDER_AUTHORITY, file);
+            uri = FileProvider.getUriForFile(this, WConfig.PROVIDER_AUTHORITY, file);
         }else {
             uri = Uri.fromFile(file);
         }
@@ -198,17 +190,17 @@ public abstract class AbsPhotoActivity extends AbsBaseActivity {
      * @param oX 输出大小 x
      * @param oY 输出大小 y
      */
-    protected void cropPhoto(String fileFrom, String fileTo, int aX, int aY, int oX, int oY){
+    public void cropPhoto(String fileFrom, String fileTo, int aX, int aY, int oX, int oY){
         mIsCrop = true;
         mFilePath = fileTo;
         mAspectX = aX;
         mAspectY = aY;
         mOutputX = oX;
         mOutputY = oY;
-        mCropUri = FileProvider.getUriForFile(this, Config.PROVIDER_AUTHORITY,
+        mCropUri = FileProvider.getUriForFile(this, WConfig.PROVIDER_AUTHORITY,
                 new File(fileFrom));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(Config.CAMERA_PERMISSION, CROP_PHOTO);
+            requestPermissions(WConfig.CAMERA_PERMISSION, CROP_PHOTO);
         }else {
             cropPhoto(mCropUri);
         }
@@ -217,7 +209,7 @@ public abstract class AbsPhotoActivity extends AbsBaseActivity {
     private void cropPhoto(Uri uri){
         FileUtil.checkFile(mFilePath);
         File file = new File(mFilePath);
-        Uri outUri = FileProvider.getUriForFile(this, Config.PROVIDER_AUTHORITY, file);
+        Uri outUri = FileProvider.getUriForFile(this, WConfig.PROVIDER_AUTHORITY, file);
         Intent intent = new Intent("com.android.camera.action.PHOTO_CROP");
         intent.setDataAndType(uri, "image/*");
         intent.putExtra("crop", true);

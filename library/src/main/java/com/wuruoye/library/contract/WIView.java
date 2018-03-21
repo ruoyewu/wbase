@@ -5,6 +5,6 @@ package com.wuruoye.library.contract;
  * this file is to be interface of base view
  */
 
-public interface IBaseView {
+public interface WIView {
 
 }
