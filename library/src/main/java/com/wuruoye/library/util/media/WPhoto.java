@@ -2,8 +2,6 @@ package com.wuruoye.library.util.media;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
@@ -18,7 +16,6 @@ import com.wuruoye.library.util.permission.WPermission;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
-import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -93,10 +90,10 @@ public class WPhoto implements IWPhoto<String> {
                     if (requestCode == WConfig.CODE_CHOOSE_PHOTO && resultCode == RESULT_OK) {
                         Uri uri = data.getData();
                         if (mIsCrop){
-                            String filePath = FileUtil.getFilePathByUri(activity, uri);
-                            assert filePath != null;
-                            uri = FileProvider.getUriForFile(activity, WConfig.PROVIDER_AUTHORITY,
-                                    new File(filePath));
+//                            String filePath = FileUtil.getFilePathByUri(activity, uri);
+//                            assert filePath != null;
+//                            uri = FileProvider.getUriForFile(activity, WConfig.PROVIDER_AUTHORITY,
+//                                    new File(filePath));
                             cropPhoto(uri, listener);
                         }else {
                             String filePath = FileUtil.getFilePathByUri(activity, uri);
@@ -315,22 +312,23 @@ public class WPhoto implements IWPhoto<String> {
             intent.putExtra("outputY", mOutputY);
             intent.putExtra("return-date", false);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, outUri);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
-            List<ResolveInfo> resolveInfoList = activity.getPackageManager().queryIntentActivities(intent,
-                    PackageManager.MATCH_DEFAULT_ONLY);
-            for (ResolveInfo info : resolveInfoList) {
-                String packageName = info.activityInfo.packageName;
-                activity.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                        | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                activity.grantUriPermission(packageName, outUri,
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                                | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            }
-            if (resolveInfoList.size() > 0) {
+//            List<ResolveInfo> resolveInfoList = activity.getPackageManager().queryIntentActivities(intent,
+//                    PackageManager.MATCH_DEFAULT_ONLY);
+//            for (ResolveInfo info : resolveInfoList) {
+//                String packageName = info.activityInfo.packageName;
+//                activity.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+//                        | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//                activity.grantUriPermission(packageName, outUri,
+//                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+//                                | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//            }
+//            if (resolveInfoList.size() > 0) {
                 activity.startActivityForResult(intent, WConfig.CODE_CROP_PHOTO);
-            }else {
-                listener.onPhotoError("没有用来剪裁图片的 Activity");
-            }
+//            }else {
+//                listener.onPhotoError("没有用来剪裁图片的 Activity");
+//            }
         }
     }
 }
