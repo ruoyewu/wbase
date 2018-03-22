@@ -22,7 +22,7 @@ import static android.app.Activity.RESULT_OK;
  * this file is to
  */
 
-public abstract class WPhotoFragment extends WBaseFragment implements IPhotoView{
+public abstract class WPhotoFragment extends WBaseFragment implements IWPhotoView{
 
     // 是否剪裁
     private boolean mIsCrop = false;
@@ -74,21 +74,9 @@ public abstract class WPhotoFragment extends WBaseFragment implements IPhotoView
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-            switch (requestCode){
-                case CHOOSE_PHOTO:
-                    doChoosePhoto();
-                    break;
-                case TAKE_PHOTO:
-                    doTakePhoto();
-                    break;
-                case CROP_PHOTO:
-                    cropPhoto(mCropUri);
-                    break;
-            }
-        } else {
-            onPhotoError("无权限");
-        }
+        boolean granted = grantResults.length > 0 &&
+                grantResults[0] == PackageManager.PERMISSION_GRANTED;
+        onPermissionResult(requestCode, granted);
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
@@ -235,5 +223,23 @@ public abstract class WPhotoFragment extends WBaseFragment implements IPhotoView
                             | Intent.FLAG_GRANT_READ_URI_PERMISSION);
         }
         startActivityForResult(intent, CROP_PHOTO);
+    }
+
+    protected void onPermissionResult(int code, boolean granted) {
+        if (granted) {
+            switch (code){
+                case CHOOSE_PHOTO:
+                    doChoosePhoto();
+                    break;
+                case TAKE_PHOTO:
+                    doTakePhoto();
+                    break;
+                case CROP_PHOTO:
+                    cropPhoto(mCropUri);
+                    break;
+            }
+        }else {
+            onPhotoError("无权限");
+        }
     }
 }

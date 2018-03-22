@@ -21,7 +21,8 @@ import java.util.List;
  * this file is to be the base activity of all activities who need use photo
  */
 
-public abstract class WPhotoActivity<T extends WIPresenter> extends WBaseActivity<T> implements IPhotoView{
+public abstract class WPhotoActivity<T extends WIPresenter> extends WBaseActivity<T>
+        implements IWPhotoView{
     // 是否剪裁
     private boolean mIsCrop = false;
     // 文件名
@@ -72,21 +73,9 @@ public abstract class WPhotoActivity<T extends WIPresenter> extends WBaseActivit
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-            switch (requestCode){
-                case CHOOSE_PHOTO:
-                    doChoosePhoto();
-                    break;
-                case TAKE_PHOTO:
-                    doTakePhoto();
-                    break;
-                case CROP_PHOTO:
-                    cropPhoto(mCropUri);
-                    break;
-            }
-        } else {
-            onPhotoError("无权限");
-        }
+        boolean granted = grantResults.length > 0 &&
+                grantResults[0] == PackageManager.PERMISSION_GRANTED;
+        onPermissionResult(requestCode, granted);
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
@@ -206,7 +195,7 @@ public abstract class WPhotoActivity<T extends WIPresenter> extends WBaseActivit
             cropPhoto(mCropUri);
         }
     }
-    
+
     private void cropPhoto(Uri uri){
         FileUtil.checkFile(mFilePath);
         File file = new File(mFilePath);
@@ -235,6 +224,24 @@ public abstract class WPhotoActivity<T extends WIPresenter> extends WBaseActivit
             startActivityForResult(intent, CROP_PHOTO);
         }else {
             onPhotoError("there is no activity to crop a photo");
+        }
+    }
+
+    protected void onPermissionResult(int code, boolean granted) {
+        if (granted) {
+            switch (code){
+                case CHOOSE_PHOTO:
+                    doChoosePhoto();
+                    break;
+                case TAKE_PHOTO:
+                    doTakePhoto();
+                    break;
+                case CROP_PHOTO:
+                    cropPhoto(mCropUri);
+                    break;
+            }
+        }else {
+            onPhotoError("无权限");
         }
     }
 }

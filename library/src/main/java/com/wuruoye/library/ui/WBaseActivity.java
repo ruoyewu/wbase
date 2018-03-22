@@ -1,11 +1,15 @@
 package com.wuruoye.library.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import com.wuruoye.library.contract.WIPresenter;
 import com.wuruoye.library.contract.WIView;
+import com.wuruoye.library.util.media.WPhoto;
+import com.wuruoye.library.util.permission.WPermission;
 
 /**
  * Created by wuruoye on 2017/11/20.
@@ -38,10 +42,25 @@ public abstract class WBaseActivity<T extends WIPresenter>
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        WPhoto.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        WPermission.onPermissionResult(requestCode, permissions, grantResults);
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
     protected void onDestroy() {
         if (mPresenter != null) {
             mPresenter.detachView();
         }
+        WPhoto.clear();
+        WPermission.clear();
         super.onDestroy();
     }
 }

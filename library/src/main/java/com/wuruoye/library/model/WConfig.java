@@ -53,4 +53,11 @@ public class WConfig {
     public static final String[] AUDIO_PERMISSION = {
             Manifest.permission.RECORD_AUDIO
     };
+
+    public static final int CODE_CHOOSE_PHOTO = 1;
+    public static final int CODE_TAKE_PHOTO = 2;
+    public static final int CODE_CROP_PHOTO = 3;
+
+    public static final int CODE_PERMISSION_FILE = 1;
+    public static final int CODE_PERMISSION_CAMERA = 2;
 }

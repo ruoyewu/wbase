@@ -9,7 +9,9 @@ import android.widget.Toast;
 
 import com.wuruoye.demo.contract.PhotoContract;
 import com.wuruoye.demo.presenter.PhotoPresenter;
-import com.wuruoye.library.ui.WPhotoActivity;
+import com.wuruoye.library.ui.WBaseActivity;
+import com.wuruoye.library.util.media.IWPhoto;
+import com.wuruoye.library.util.media.WPhoto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +21,8 @@ import java.util.List;
  * this file is to
  */
 
-public class PhotoActivity extends WPhotoActivity<PhotoContract.Presenter>
-        implements PhotoContract.View, View.OnClickListener {
+public class PhotoActivity extends WBaseActivity<PhotoContract.Presenter>
+        implements PhotoContract.View, View.OnClickListener, IWPhoto.OnWPhotoListener<String> {
     public static final int OX = 500;
     public static final int OY = 500;
     public static final int AX = 1;
@@ -35,6 +37,7 @@ public class PhotoActivity extends WPhotoActivity<PhotoContract.Presenter>
 
     private boolean isNew = false;
     private List<String> mNewFileList = new ArrayList<>();
+    private WPhoto mPhotoGet;
 
     @Override
     protected int getContentView() {
@@ -44,6 +47,7 @@ public class PhotoActivity extends WPhotoActivity<PhotoContract.Presenter>
     @Override
     protected void initData(Bundle bundle) {
         setPresenter(new PhotoPresenter());
+        mPhotoGet = new WPhoto(this);
     }
 
     @Override
@@ -63,35 +67,21 @@ public class PhotoActivity extends WPhotoActivity<PhotoContract.Presenter>
     }
 
     @Override
-    public void onPhotoBack(String photoPath) {
-        iv.setImageBitmap(BitmapFactory.decodeFile(photoPath));
-        if (isNew) {
-            mNewFileList.add(photoPath);
-            isNew = false;
-        }
-    }
-
-    @Override
-    public void onPhotoError(String info) {
-        Toast.makeText(this, info, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_photo_choose:
-                choosePhoto();
+                mPhotoGet.choosePhoto(this);
                 break;
             case R.id.btn_photo_choose_crop:
-                choosePhoto(mPresenter.getPath(), AX, AY, OX, OY);
+                mPhotoGet.choosePhoto(mPresenter.getPath(), AX, AY, OX, OY, this);
                 isNew = true;
                 break;
             case R.id.btn_photo_take:
-                takePhoto(mPresenter.getPath());
+                mPhotoGet.takePhoto(mPresenter.getPath(), this);
                 isNew = true;
                 break;
             case R.id.btn_photo_take_crop:
-                takePhoto(mPresenter.getPath(), AX, AY, OX, OY);
+                mPhotoGet.takePhoto(mPresenter.getPath(), AX, AY, OX, OY, this);
                 isNew = true;
                 break;
             case R.id.btn_photo_delete:
@@ -103,5 +93,19 @@ public class PhotoActivity extends WPhotoActivity<PhotoContract.Presenter>
     @Override
     public void onDeleteError(String path) {
         Toast.makeText(this, "delete error " + path, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onPhotoResult(String result) {
+        iv.setImageBitmap(BitmapFactory.decodeFile(result));
+        if (isNew) {
+            mNewFileList.add(result);
+            isNew = false;
+        }
+    }
+
+    @Override
+    public void onPhotoError(String error) {
+        Toast.makeText(PhotoActivity.this, error, Toast.LENGTH_SHORT).show();
     }
 }
