@@ -3,6 +3,8 @@ package com.wuruoye.library.model;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.wuruoye.library.ui.WBaseApp;
+
 /**
  * Created by wuruoye on 2017/11/20.
  * this file is to the base cache manager class
@@ -11,18 +13,26 @@ import android.content.SharedPreferences;
 public abstract class WBaseCache {
     private static String SP_NAME = "sp_name";
 
-    public static void init(String name) {
+    static void init(String name) {
         SP_NAME = name;
     }
 
     private SharedPreferences mSP;
 
-    protected abstract void clearCache();
-
-    public WBaseCache(Context context){
+    public WBaseCache() {
         if (mSP == null){
             synchronized (this){
-                mSP = context.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
+                mSP = WBaseApp.getApp().getSharedPreferences(SP_NAME,
+                        Context.MODE_PRIVATE);
+            }
+        }
+    }
+
+    public WBaseCache(String name){
+        if (mSP == null){
+            synchronized (this){
+                mSP = WBaseApp.getApp().getSharedPreferences(SP_NAME + "_" + name,
+                        Context.MODE_PRIVATE);
             }
         }
     }
@@ -53,5 +63,20 @@ public abstract class WBaseCache {
     }
     protected void putString(String key, String value){
         mSP.edit().putString(key, value).apply();
+    }
+
+    protected float getFloat(String key, float value) {
+        return mSP.getFloat(key, value);
+    }
+    protected void putFloat(String key, float value) {
+        mSP.edit().putFloat(key, value).apply();
+    }
+
+    public void clear() {
+        mSP.edit().clear().apply();
+    }
+
+    public void remove(String key) {
+        mSP.edit().remove(key).apply();
     }
 }
