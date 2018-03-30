@@ -2,6 +2,8 @@ package com.wuruoye.library.util.media;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
@@ -16,6 +18,7 @@ import com.wuruoye.library.util.permission.WPermission;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -27,9 +30,9 @@ import static android.app.Activity.RESULT_OK;
  */
 
 public class WPhoto implements IWPhoto<String> {
-    private static OnWPhotoResult mResult;
+    private static OnWPhotoResultListener mListener;
 
-    private final WeakReference<Activity> mActivity;
+    private static WeakReference<Activity> mActivity;
     private WPermission mPermission;
     // 是否剪裁
     private boolean mIsCrop = false;
@@ -50,13 +53,22 @@ public class WPhoto implements IWPhoto<String> {
     }
 
     public static void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (mResult != null) {
-            mResult.onActivityResult(requestCode, resultCode, data);
+        if (mListener != null) {
+            mListener.onActivityResult(requestCode, resultCode, data);
         }
     }
 
+    public static void check() {
+        if (mActivity != null);
+        if (mListener != null);
+    }
+
     public static void clear() {
-        mResult = null;
+        if (mActivity != null) {
+            mActivity.clear();
+        }
+        mActivity = null;
+        mListener = null;
     }
 
     @Override
@@ -64,7 +76,7 @@ public class WPhoto implements IWPhoto<String> {
         mIsCrop = false;
         if (WPermission.isNeedPermissionRequest()) {
             mPermission.requestPermission(PermissionConfig.PERMISSION_FILE,
-                    WConfig.CODE_PERMISSION_FILE, new IWPermission.OnWPermissionResult() {
+                    WConfig.CODE_PERMISSION_FILE, new IWPermission.OnWPermissionListener() {
                 @Override
                 public void onPermissionResult(int requestCode, @NonNull String[] permissions,
                                                @NonNull int[] grantResult) {
@@ -84,16 +96,16 @@ public class WPhoto implements IWPhoto<String> {
     private void doChoosePhoto(final OnWPhotoListener<String> listener){
         final Activity activity = mActivity.get();
         if (activity != null) {
-            mResult = new OnWPhotoResult() {
+            mListener = new OnWPhotoResultListener() {
                 @Override
                 public void onActivityResult(int requestCode, int resultCode, Intent data) {
                     if (requestCode == WConfig.CODE_CHOOSE_PHOTO && resultCode == RESULT_OK) {
                         Uri uri = data.getData();
                         if (mIsCrop){
-//                            String filePath = FileUtil.getFilePathByUri(activity, uri);
-//                            assert filePath != null;
-//                            uri = FileProvider.getUriForFile(activity, WConfig.PROVIDER_AUTHORITY,
-//                                    new File(filePath));
+                            String filePath = FileUtil.getFilePathByUri(activity, uri);
+                            assert filePath != null;
+                            uri = FileProvider.getUriForFile(activity, WConfig.PROVIDER_AUTHORITY,
+                                    new File(filePath));
                             cropPhoto(uri, listener);
                         }else {
                             String filePath = FileUtil.getFilePathByUri(activity, uri);
@@ -122,7 +134,7 @@ public class WPhoto implements IWPhoto<String> {
         mOutputY = oY;
         if (WPermission.isNeedPermissionRequest()) {
             mPermission.requestPermission(PermissionConfig.PERMISSION_FILE,
-                    WConfig.CODE_PERMISSION_FILE, new IWPermission.OnWPermissionResult() {
+                    WConfig.CODE_PERMISSION_FILE, new IWPermission.OnWPermissionListener() {
                         @Override
                         public void onPermissionResult(int requestCode,
                                                        @NonNull String[] permissions,
@@ -145,14 +157,14 @@ public class WPhoto implements IWPhoto<String> {
         mIsCrop = false;
         if (WPermission.isNeedPermissionRequest()) {
             mPermission.requestPermission(PermissionConfig.PERMISSION_FILE,
-                    WConfig.CODE_PERMISSION_FILE, new IWPermission.OnWPermissionResult() {
+                    WConfig.CODE_PERMISSION_FILE, new IWPermission.OnWPermissionListener() {
                         @Override
                         public void onPermissionResult(int requestCode,
                                                        @NonNull String[] permissions,
                                                        @NonNull int[] grantResult) {
                             if (WPermission.isGranted(permissions, grantResult)) {
                                 mPermission.requestPermission(PermissionConfig.PERMISSION_CAMARE,
-                                        WConfig.CODE_PERMISSION_CAMERA, new IWPermission.OnWPermissionResult() {
+                                        WConfig.CODE_PERMISSION_CAMERA, new IWPermission.OnWPermissionListener() {
                                             @Override
                                             public void onPermissionResult(int requestCode, @NonNull String[] permissions,
                                                                            @NonNull int[] grantResult) {
@@ -184,14 +196,14 @@ public class WPhoto implements IWPhoto<String> {
         mOutputY = oY;
         if (WPermission.isNeedPermissionRequest()) {
             mPermission.requestPermission(PermissionConfig.PERMISSION_FILE,
-                    WConfig.CODE_PERMISSION_FILE, new IWPermission.OnWPermissionResult() {
+                    WConfig.CODE_PERMISSION_FILE, new IWPermission.OnWPermissionListener() {
                         @Override
                         public void onPermissionResult(int requestCode,
                                                        @NonNull String[] permissions,
                                                        @NonNull int[] grantResult) {
                             if (WPermission.isGranted(permissions, grantResult)) {
                                 mPermission.requestPermission(PermissionConfig.PERMISSION_CAMARE,
-                                        WConfig.CODE_PERMISSION_CAMERA, new IWPermission.OnWPermissionResult() {
+                                        WConfig.CODE_PERMISSION_CAMERA, new IWPermission.OnWPermissionListener() {
                                             @Override
                                             public void onPermissionResult(int requestCode, @NonNull String[] permissions,
                                                                            @NonNull int[] grantResult) {
@@ -215,7 +227,7 @@ public class WPhoto implements IWPhoto<String> {
     private void doTakePhoto(final OnWPhotoListener<String> listener) {
         final Activity activity = mActivity.get();
         if (activity != null) {
-            mResult = new OnWPhotoResult() {
+            mListener = new OnWPhotoResultListener() {
                 @Override
                 public void onActivityResult(int requestCode, int resultCode, Intent data) {
                     if (requestCode == WConfig.CODE_TAKE_PHOTO && resultCode == RESULT_OK) {
@@ -260,13 +272,13 @@ public class WPhoto implements IWPhoto<String> {
                     new File(from));
             if (WPermission.isNeedPermissionRequest()) {
                 mPermission.requestPermission(PermissionConfig.PERMISSION_FILE,
-                        WConfig.CODE_PERMISSION_FILE, new IWPermission.OnWPermissionResult() {
+                        WConfig.CODE_PERMISSION_FILE, new IWPermission.OnWPermissionListener() {
                     @Override
                     public void onPermissionResult(int requestCode, @NonNull String[] permissions,
                                                    @NonNull int[] grantResult) {
                         if (WPermission.isGranted(permissions, grantResult)) {
                             mPermission.requestPermission(PermissionConfig.PERMISSION_CAMARE,
-                                    WConfig.CODE_PERMISSION_CAMERA, new IWPermission.OnWPermissionResult() {
+                                    WConfig.CODE_PERMISSION_CAMERA, new IWPermission.OnWPermissionListener() {
                                         @Override
                                         public void onPermissionResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResult) {
                                             if (WPermission.isGranted(permissions, grantResult)) {
@@ -290,7 +302,7 @@ public class WPhoto implements IWPhoto<String> {
     private void cropPhoto(Uri uri, final OnWPhotoListener<String> listener) {
         final Activity activity = mActivity.get();
         if (activity != null) {
-            mResult = new OnWPhotoResult() {
+            mListener = new OnWPhotoResultListener() {
                 @Override
                 public void onActivityResult(int requestCode, int resultCode, Intent data) {
                     if (requestCode == WConfig.CODE_CROP_PHOTO && resultCode == RESULT_OK) {
@@ -314,21 +326,21 @@ public class WPhoto implements IWPhoto<String> {
             intent.putExtra(MediaStore.EXTRA_OUTPUT, outUri);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
-//            List<ResolveInfo> resolveInfoList = activity.getPackageManager().queryIntentActivities(intent,
-//                    PackageManager.MATCH_DEFAULT_ONLY);
-//            for (ResolveInfo info : resolveInfoList) {
-//                String packageName = info.activityInfo.packageName;
-//                activity.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-//                        | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//                activity.grantUriPermission(packageName, outUri,
-//                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-//                                | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//            }
-//            if (resolveInfoList.size() > 0) {
+            List<ResolveInfo> resolveInfoList = activity.getPackageManager().queryIntentActivities(intent,
+                    PackageManager.MATCH_DEFAULT_ONLY);
+            for (ResolveInfo info : resolveInfoList) {
+                String packageName = info.activityInfo.packageName;
+                activity.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                        | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                activity.grantUriPermission(packageName, outUri,
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                                | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            }
+            if (resolveInfoList.size() > 0) {
                 activity.startActivityForResult(intent, WConfig.CODE_CROP_PHOTO);
-//            }else {
-//                listener.onPhotoError("没有用来剪裁图片的 Activity");
-//            }
+            }else {
+                listener.onPhotoError("没有用来剪裁图片的 Activity");
+            }
         }
     }
 }

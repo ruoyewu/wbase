@@ -6,6 +6,8 @@ import android.view.View;
 import android.widget.Button;
 
 import com.wuruoye.library.ui.WBaseActivity;
+import com.wuruoye.library.util.media.WPhoto;
+import com.wuruoye.library.util.permission.WPermission;
 
 public class MainActivity extends WBaseActivity implements View.OnClickListener {
     private Button btnSLL;
@@ -22,6 +24,13 @@ public class MainActivity extends WBaseActivity implements View.OnClickListener 
     @Override
     protected void initData(Bundle bundle) {
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        WPhoto.check();
+        WPermission.check();
     }
 
     @Override

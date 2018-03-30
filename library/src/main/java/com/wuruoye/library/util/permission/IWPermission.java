@@ -9,12 +9,12 @@ import android.support.annotation.NonNull;
  */
 
 public interface IWPermission {
-    interface OnWPermissionResult {
+    interface OnWPermissionListener {
         void onPermissionResult(int requestCode, @NonNull String[] permissions,
                                 @NonNull int[] grantResult);
     }
 
-    void requestPermission(String[] permissions, int requestCode, OnWPermissionResult listener);
+    void requestPermission(String[] permissions, int requestCode, OnWPermissionListener listener);
 
     boolean isGranted(String[] permissions);
 }

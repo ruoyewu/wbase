@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Context;
 import android.os.Environment;
 
+import com.wuruoye.library.util.log.WLog;
+
 
 /**
  * Created by wuruoye on 2017/11/20.
@@ -23,6 +25,10 @@ public class WConfig {
         RECORD_PATH = APP_PATH + "record/";
         PROVIDER_AUTHORITY = PACKAGE_NAME + ".fileprovider";
         WBaseCache.init(PACKAGE_NAME);
+    }
+
+    public static void setLog(boolean isLog) {
+        WLog.IS_LOG = isLog;
     }
 
     public static String APP_PATH;

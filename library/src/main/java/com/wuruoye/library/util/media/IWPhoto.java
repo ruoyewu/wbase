@@ -14,7 +14,7 @@ public interface IWPhoto<T> {
         void onPhotoError(String error);
     }
 
-    interface OnWPhotoResult {
+    interface OnWPhotoResultListener {
         void onActivityResult(int requestCode, int resultCode, Intent data);
     }
 

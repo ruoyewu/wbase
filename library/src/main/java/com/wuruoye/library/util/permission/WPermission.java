@@ -15,12 +15,12 @@ import java.lang.ref.WeakReference;
  */
 
 public class WPermission implements IWPermission {
-    private static OnWPermissionResult mListener;
+    private static OnWPermissionListener mListener;
 
-    private WeakReference<Activity> mActivity;
+    private static WeakReference<Activity> mActivity;
 
     public WPermission(Activity activity) {
-        mActivity = new WeakReference<Activity>(activity);
+        mActivity = new WeakReference<>(activity);
     }
 
     public static void onPermissionResult(int requestCode, @NonNull String[] permissions,
@@ -30,7 +30,16 @@ public class WPermission implements IWPermission {
         }
     }
 
+    public static void check() {
+        if (mActivity != null);
+        if (mListener != null);
+    }
+
     public static void clear() {
+        if (mActivity != null) {
+            mActivity.clear();
+        }
+        mActivity = null;
         mListener = null;
     }
 
@@ -46,7 +55,7 @@ public class WPermission implements IWPermission {
     @TargetApi(Build.VERSION_CODES.M)
     @Override
     public void requestPermission(String[] permissions, int requestCode,
-                                  OnWPermissionResult listener) {
+                                  OnWPermissionListener listener) {
         final Activity activity = mActivity.get();
         if (activity != null) {
             mListener = listener;

@@ -97,6 +97,7 @@ public class PhotoActivity extends WBaseActivity<PhotoContract.Presenter>
 
     @Override
     public void onPhotoResult(String result) {
+        System.gc();
         iv.setImageBitmap(BitmapFactory.decodeFile(result));
         if (isNew) {
             mNewFileList.add(result);

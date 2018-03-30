@@ -1,6 +1,5 @@
 package com.wuruoye.library.widget;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -12,6 +11,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.wuruoye.library.R;
+import com.wuruoye.library.util.log.WLog;
 
 /**
  * Created by wuruoye on 2018/3/21.
@@ -35,6 +35,7 @@ public class HeartBeatView extends View {
     private Paint mPaint;
     private float[] mData = new float[8];
     private float[] mCtrl = new float[16];
+    private Path mPath;
 
     private int mDir = 1;
 
@@ -54,6 +55,7 @@ public class HeartBeatView extends View {
     }
 
     private void init(AttributeSet attrs) {
+        WLog.loge(this, "init");
         if (attrs == null) {
             initValue();
         }else {
@@ -65,6 +67,7 @@ public class HeartBeatView extends View {
         mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         mPaint.setAntiAlias(true);
         mPaint.setColor(mColor);
+        mPath = new Path();
     }
 
     private void initSize() {
@@ -121,20 +124,20 @@ public class HeartBeatView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        WLog.loge(this, "onDraw");
         super.onDraw(canvas);
         canvas.translate(mCenterY, mCenterX);
         canvas.scale(1, -1);
 
-        @SuppressLint("DrawAllocation")
-        Path path = new Path();
-        path.moveTo(mData[0], mData[1]);
+        mPath.reset();
+        mPath.moveTo(mData[0], mData[1]);
 
-        path.cubicTo(mCtrl[0], mCtrl[1], mCtrl[2], mCtrl[3], mData[2], mData[3]);
-        path.cubicTo(mCtrl[4], mCtrl[5], mCtrl[6], mCtrl[7], mData[4], mData[5]);
-        path.cubicTo(mCtrl[8], mCtrl[9], mCtrl[10], mCtrl[11], mData[6], mData[7]);
-        path.cubicTo(mCtrl[12], mCtrl[13], mCtrl[14], mCtrl[15], mData[0], mData[1]);
+        mPath.cubicTo(mCtrl[0], mCtrl[1], mCtrl[2], mCtrl[3], mData[2], mData[3]);
+        mPath.cubicTo(mCtrl[4], mCtrl[5], mCtrl[6], mCtrl[7], mData[4], mData[5]);
+        mPath.cubicTo(mCtrl[8], mCtrl[9], mCtrl[10], mCtrl[11], mData[6], mData[7]);
+        mPath.cubicTo(mCtrl[12], mCtrl[13], mCtrl[14], mCtrl[15], mData[0], mData[1]);
 
-        canvas.drawPath(path, mPaint);
+        canvas.drawPath(mPath, mPaint);
 
         mCurrent += mPiece * mDir;
         if (mCurrent >= mDuration) {
@@ -156,6 +159,7 @@ public class HeartBeatView extends View {
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        WLog.loge(this, "onSizeChanged");
         if (w > h) {
             super.onSizeChanged(h, h, oldw, oldh);
         }else {
