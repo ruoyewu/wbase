@@ -36,6 +36,11 @@ public class WNet {
         mNet.uploadFile(url, key, file, type, listener);
     }
 
+    public static void uploadFile(String url, ArrayMap<String, String> values, ArrayMap<String,
+            String> files, String type, Listener<String> listener) {
+        mNet.uploadFile(url, values, files, type, listener);
+    }
+
     public static void getInBackground(final String url, final ArrayMap<String, String> values,
                                        final Listener<String> listener) {
         new Thread(new Runnable() {
@@ -102,6 +107,37 @@ public class WNet {
             @Override
             public void run() {
                 uploadFile(url, key, file, type, new Listener<String>() {
+                    @Override
+                    public void onSuccessful(final String result) {
+                        WBaseApp.runOnMainThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onSuccessful(result);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFail(final String message) {
+                        WBaseApp.runOnMainThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onFail(message);
+                            }
+                        });
+                    }
+                });
+            }
+        }).start();
+    }
+
+    public static void uploadFileInBackground(final String url, final ArrayMap<String, String> values,
+                                              final ArrayMap<String, String> files, final String type,
+                                              final Listener<String> listener) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                uploadFile(url, values, files, type, new Listener<String>() {
                     @Override
                     public void onSuccessful(final String result) {
                         WBaseApp.runOnMainThread(new Runnable() {

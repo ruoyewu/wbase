@@ -20,4 +20,6 @@ public interface IWNet {
     void post(String url, ArrayMap<String, String> values, Listener<String> listener);
     void uploadFile(String url, String key, String file, String type, Listener<String> listener);
     void downloadFile(String url, String file, Listener<String> listener);
+    void uploadFile(String url, ArrayMap<String, String> values, ArrayMap<String, String> files,
+                    String type, Listener<String> listener);
 }

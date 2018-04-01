@@ -151,6 +151,30 @@ public class OKHttpNet implements IWNet {
                 });
     }
 
+    @Override
+    public void uploadFile(String url, ArrayMap<String, String> values, ArrayMap<String,
+            String> files, String type, Listener<String> listener) {
+        MultipartBody.Builder builder = new MultipartBody.Builder();
+        builder.addPart(map2form(values));
+        for (Map.Entry<String, String> entry : files.entrySet()) {
+            File file = new File(entry.getValue());
+            if (file.isDirectory()) {
+                listener.onFail("file " + entry.getValue() + " is a directory not file");
+                return;
+            }else if (!file.exists()) {
+                listener.onFail("file " + entry.getValue() + " is not exists");
+                return;
+            }
+            builder.addFormDataPart(entry.getKey(), file.getName(), RequestBody
+                    .create(MediaType.parse(type), file));
+        }
+        Request request = new Request.Builder()
+                .url(url)
+                .post(builder.build())
+                .build();
+        request(request, listener);
+    }
+
     private void request(Request request, final Listener<String> listener) {
         mClient.newCall(request)
                 .enqueue(new Callback() {
