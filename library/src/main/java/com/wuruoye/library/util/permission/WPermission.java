@@ -30,11 +30,6 @@ public class WPermission implements IWPermission {
         }
     }
 
-    public static void check() {
-        if (mActivity != null);
-        if (mListener != null);
-    }
-
     public static void clear() {
         if (mActivity != null) {
             mActivity.clear();

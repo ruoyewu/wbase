@@ -1,15 +1,18 @@
 package com.wuruoye.library.util.net;
 
 
-import android.support.v4.util.ArrayMap;
-
 import com.wuruoye.library.model.Listener;
 import com.wuruoye.library.ui.WBaseApp;
+import com.wuruoye.library.util.thread.WThreadPool;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 
-/**1
+/**
  * Created by wuruoye on 2018/3/20.
- * this file is to
+ * 网络请求入口类
  */
 
 public class WNet {
@@ -23,142 +26,199 @@ public class WNet {
         mNet.setParamType(type);
     }
 
-    public static void get(String url, ArrayMap<String, String> values, Listener<String> listener) {
+    public static void get(String url, Map<String, String> values, Listener<String> listener) {
         mNet.get(url, values, listener);
     }
 
-    public static void post(String url, ArrayMap<String, String> values, Listener<String> listener) {
+    public static void post(String url, Map<String, String> values, Listener<String> listener) {
         mNet.post(url, values, listener);
+    }
+
+    public static void request(String url, Map<String, String> values, Listener<String> listener,
+                               IWNet.METHOD method) {
+        mNet.request(url, values, listener, method);
     }
 
     public static void uploadFile(String url, String key, String file, String type,
                                   Listener<String> listener) {
-        mNet.uploadFile(url, key, file, type, listener);
+        uploadFile(url, Collections.<String, String>emptyMap(), Collections.singletonMap(key, file),
+                Collections.singletonList(type), listener);
     }
 
-    public static void uploadFile(String url, ArrayMap<String, String> values, ArrayMap<String,
-            String> files, String type, Listener<String> listener) {
-        mNet.uploadFile(url, values, files, type, listener);
+    public static void uploadFile(String url, Map<String, String> values, Map<String,
+            String> files, List<String> types, Listener<String> listener) {
+        mNet.uploadFile(url, values, files, types, listener);
     }
 
-    public static void getInBackground(final String url, final ArrayMap<String, String> values,
+    public static void getInBackground(final String url, final Map<String, String> values,
                                        final Listener<String> listener) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                get(url, values, new Listener<String>() {
-                    @Override
-                    public void onSuccessful(final String result) {
-                        WBaseApp.runOnMainThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onSuccessful(result);
-                            }
-                        });
-                    }
+        try {
+            WThreadPool.exec(new Runnable() {
+                @Override
+                public void run() {
+                    get(url, values, new Listener<String>() {
+                        @Override
+                        public void onSuccessful(final String result) {
+                            WBaseApp.runOnMainThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    listener.onSuccessful(result);
+                                }
+                            });
+                        }
 
-                    @Override
-                    public void onFail(final String message) {
-                        WBaseApp.runOnMainThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onFail(message);
-                            }
-                        });
-                    }
-                });
-            }
-        }).start();
+                        @Override
+                        public void onFail(final String message) {
+                            WBaseApp.runOnMainThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    listener.onFail(message);
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        } catch (Exception e) {
+            listener.onFail("fail in WThreadPool : " + e.getMessage());
+        }
     }
 
-    public static void postInBackGround(final String url, final ArrayMap<String, String> values,
+    public static void postInBackground(final String url, final Map<String, String> values,
                                         final Listener<String> listener) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                post(url, values, new Listener<String>() {
-                    @Override
-                    public void onSuccessful(final String result) {
-                        WBaseApp.runOnMainThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onSuccessful(result);
-                            }
-                        });
-                    }
+        try {
+            WThreadPool.exec(new Runnable() {
+                @Override
+                public void run() {
+                    post(url, values, new Listener<String>() {
+                        @Override
+                        public void onSuccessful(final String result) {
+                            WBaseApp.runOnMainThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    listener.onSuccessful(result);
+                                }
+                            });
+                        }
 
-                    @Override
-                    public void onFail(final String message) {
-                        WBaseApp.runOnMainThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onFail(message);
-                            }
-                        });
-                    }
-                });
-            }
-        }).start();
+                        @Override
+                        public void onFail(final String message) {
+                            WBaseApp.runOnMainThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    listener.onFail(message);
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        } catch (Exception e) {
+            listener.onFail("fail in WThreadPool : " + e.getMessage());
+        }
     }
 
-    public static void uploadFileInBackGround(final String url, final String key, final String file,
+    public static void requestInBackground(final String url, final Map<String, String> values,
+                                           final Listener<String>
+                                           listener, final IWNet.METHOD method) {
+        try {
+            WThreadPool.exec(new Runnable() {
+                @Override
+                public void run() {
+                    request(url, values, new Listener<String>() {
+                        @Override
+                        public void onSuccessful(final String result) {
+                            WBaseApp.runOnMainThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    listener.onSuccessful(result);
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onFail(final String message) {
+                            WBaseApp.runOnMainThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    listener.onFail(message);
+                                }
+                            });
+                        }
+                    }, method);
+                }
+            });
+        } catch (Exception e) {
+            listener.onFail("fail in WThreadPool : " + e.getMessage());
+        }
+    }
+
+    public static void uploadFileInBackground(final String url, final String key, final String file,
                                               final String type, final Listener<String> listener) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                uploadFile(url, key, file, type, new Listener<String>() {
-                    @Override
-                    public void onSuccessful(final String result) {
-                        WBaseApp.runOnMainThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onSuccessful(result);
-                            }
-                        });
-                    }
+        try {
+            WThreadPool.exec(new Runnable() {
+                @Override
+                public void run() {
+                    uploadFile(url, key, file, type, new Listener<String>() {
+                        @Override
+                        public void onSuccessful(final String result) {
+                            WBaseApp.runOnMainThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    listener.onSuccessful(result);
+                                }
+                            });
+                        }
 
-                    @Override
-                    public void onFail(final String message) {
-                        WBaseApp.runOnMainThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onFail(message);
-                            }
-                        });
-                    }
-                });
-            }
-        }).start();
+                        @Override
+                        public void onFail(final String message) {
+                            WBaseApp.runOnMainThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    listener.onFail(message);
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        } catch (Exception e) {
+            listener.onFail("fail in WThreadPool : " + e.getMessage());
+        }
     }
 
-    public static void uploadFileInBackground(final String url, final ArrayMap<String, String> values,
-                                              final ArrayMap<String, String> files, final String type,
+    public static void uploadFileInBackground(final String url, final Map<String, String> values,
+                                              final Map<String, String> files, final List<String> types,
                                               final Listener<String> listener) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                uploadFile(url, values, files, type, new Listener<String>() {
-                    @Override
-                    public void onSuccessful(final String result) {
-                        WBaseApp.runOnMainThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onSuccessful(result);
-                            }
-                        });
-                    }
+        try {
+            WThreadPool.exec(new Runnable() {
+                @Override
+                public void run() {
+                    uploadFile(url, values, files, types, new Listener<String>() {
+                        @Override
+                        public void onSuccessful(final String result) {
+                            WBaseApp.runOnMainThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    listener.onSuccessful(result);
+                                }
+                            });
+                        }
 
-                    @Override
-                    public void onFail(final String message) {
-                        WBaseApp.runOnMainThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onFail(message);
-                            }
-                        });
-                    }
-                });
-            }
-        }).start();
+                        @Override
+                        public void onFail(final String message) {
+                            WBaseApp.runOnMainThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    listener.onFail(message);
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        } catch (Exception e) {
+            listener.onFail("fail in WThreadPool : " + e.getMessage());
+        }
     }
 }

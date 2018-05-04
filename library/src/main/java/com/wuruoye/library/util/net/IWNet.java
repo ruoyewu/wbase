@@ -1,9 +1,10 @@
 package com.wuruoye.library.util.net;
 
 
-import android.support.v4.util.ArrayMap;
-
 import com.wuruoye.library.model.Listener;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by wuruoye on 2018/3/20.
@@ -13,13 +14,22 @@ import com.wuruoye.library.model.Listener;
 public interface IWNet {
     enum PARAM_TYPE {
         FORM,
-        JSON
+        JSON,
+        TEXT
+    }
+    enum METHOD {
+        GET,
+        POST,
+        PUT,
+        DELETE,
+        HEAD,
+        OPTIONS
     }
     void setParamType(PARAM_TYPE type);
-    void get(String url, ArrayMap<String, String> values, Listener<String> listener);
-    void post(String url, ArrayMap<String, String> values, Listener<String> listener);
-    void uploadFile(String url, String key, String file, String type, Listener<String> listener);
+    void get(String url, Map<String, String> values, Listener<String> listener);
+    void post(String url, Map<String, String> values, Listener<String> listener);
+    void request(String url, Map<String, String> values, Listener<String> listener, METHOD method);
     void downloadFile(String url, String file, Listener<String> listener);
-    void uploadFile(String url, ArrayMap<String, String> values, ArrayMap<String, String> files,
-                    String type, Listener<String> listener);
+    void uploadFile(String url, Map<String, String> values, Map<String, String> files,
+                    List<String> types, Listener<String> listener);
 }

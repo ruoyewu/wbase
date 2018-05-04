@@ -58,11 +58,6 @@ public class WPhoto implements IWPhoto<String> {
         }
     }
 
-    public static void check() {
-        if (mActivity != null);
-        if (mListener != null);
-    }
-
     public static void clear() {
         if (mActivity != null) {
             mActivity.clear();
@@ -99,20 +94,22 @@ public class WPhoto implements IWPhoto<String> {
             mListener = new OnWPhotoResultListener() {
                 @Override
                 public void onActivityResult(int requestCode, int resultCode, Intent data) {
-                    if (requestCode == WConfig.CODE_CHOOSE_PHOTO && resultCode == RESULT_OK) {
-                        Uri uri = data.getData();
-                        if (mIsCrop){
-                            String filePath = FileUtil.getFilePathByUri(activity, uri);
-                            assert filePath != null;
-                            uri = FileProvider.getUriForFile(activity, WConfig.PROVIDER_AUTHORITY,
-                                    new File(filePath));
-                            cropPhoto(uri, listener);
+                    if (requestCode == WConfig.CODE_CHOOSE_PHOTO) {
+                        if (resultCode == RESULT_OK) {
+                            Uri uri = data.getData();
+                            if (mIsCrop){
+                                String filePath = FileUtil.getFilePathByUri(activity, uri);
+                                assert filePath != null;
+                                uri = FileProvider.getUriForFile(activity, WConfig.PROVIDER_AUTHORITY,
+                                        new File(filePath));
+                                cropPhoto(uri, listener);
+                            }else {
+                                String filePath = FileUtil.getFilePathByUri(activity, uri);
+                                listener.onPhotoResult(filePath);
+                            }
                         }else {
-                            String filePath = FileUtil.getFilePathByUri(activity, uri);
-                            listener.onPhotoResult(filePath);
+                            listener.onPhotoError("获取照片失败");
                         }
-                    }else {
-                        listener.onPhotoError("获取照片失败");
                     }
                 }
             };
@@ -230,16 +227,18 @@ public class WPhoto implements IWPhoto<String> {
             mListener = new OnWPhotoResultListener() {
                 @Override
                 public void onActivityResult(int requestCode, int resultCode, Intent data) {
-                    if (requestCode == WConfig.CODE_TAKE_PHOTO && resultCode == RESULT_OK) {
-                        if (mIsCrop) {
-                            Uri uri = FileProvider.getUriForFile(activity, WConfig.PROVIDER_AUTHORITY,
-                                    new File(mFilePath));
-                            cropPhoto(uri, listener);
+                    if (requestCode == WConfig.CODE_TAKE_PHOTO) {
+                        if (resultCode == RESULT_OK) {
+                            if (mIsCrop) {
+                                Uri uri = FileProvider.getUriForFile(activity, WConfig.PROVIDER_AUTHORITY,
+                                        new File(mFilePath));
+                                cropPhoto(uri, listener);
+                            }else {
+                                listener.onPhotoResult(mFilePath);
+                            }
                         }else {
-                            listener.onPhotoResult(mFilePath);
+                            listener.onPhotoError("获取照片失败");
                         }
-                    }else {
-                        listener.onPhotoError("获取照片失败");
                     }
                 }
             };
@@ -305,10 +304,12 @@ public class WPhoto implements IWPhoto<String> {
             mListener = new OnWPhotoResultListener() {
                 @Override
                 public void onActivityResult(int requestCode, int resultCode, Intent data) {
-                    if (requestCode == WConfig.CODE_CROP_PHOTO && resultCode == RESULT_OK) {
-                        listener.onPhotoResult(mFilePath);
-                    }else {
-                        listener.onPhotoError("剪裁图片失败");
+                    if (requestCode == WConfig.CODE_CROP_PHOTO) {
+                        if (resultCode == RESULT_OK) {
+                            listener.onPhotoResult(mFilePath);
+                        }else {
+                            listener.onPhotoError("剪裁图片失败");
+                        }
                     }
                 }
             };

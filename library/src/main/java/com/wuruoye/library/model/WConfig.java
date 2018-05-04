@@ -5,6 +5,10 @@ import android.content.Context;
 import android.os.Environment;
 
 import com.wuruoye.library.util.log.WLog;
+import com.wuruoye.library.util.net.IWNet;
+import com.wuruoye.library.util.net.WNet;
+import com.wuruoye.library.util.thread.WIThreadPool;
+import com.wuruoye.library.util.thread.WThreadPool;
 
 
 /**
@@ -25,6 +29,14 @@ public class WConfig {
         RECORD_PATH = APP_PATH + "record/";
         PROVIDER_AUTHORITY = PACKAGE_NAME + ".fileprovider";
         WBaseCache.init(PACKAGE_NAME);
+    }
+
+    public static void initNet(IWNet net) {
+        WNet.init(net);
+    }
+
+    public static void initThreadPool(WIThreadPool threadPool) {
+        WThreadPool.init(threadPool);
     }
 
     public static void setLog(boolean isLog) {

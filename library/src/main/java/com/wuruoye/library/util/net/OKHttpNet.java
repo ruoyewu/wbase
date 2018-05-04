@@ -1,7 +1,6 @@
 package com.wuruoye.library.util.net;
 
 import android.support.annotation.NonNull;
-import android.support.v4.util.ArrayMap;
 
 import com.wuruoye.library.model.Listener;
 import com.wuruoye.library.model.WConfig;
@@ -33,7 +32,7 @@ import okhttp3.Response;
 
 /**
  * Created by wuruoye on 2018/3/20.
- * this file is to
+ * 默认网络请求类
  */
 
 public class OKHttpNet implements IWNet {
@@ -69,31 +68,33 @@ public class OKHttpNet implements IWNet {
     }
 
     @Override
-    public void get(String url, ArrayMap<String, String> values, final Listener<String> listener) {
-        StringBuilder builder = new StringBuilder(url);
-        if (values.size() > 0) {
-            builder.append("?");
-        }
-        for (Map.Entry<String, String> entry : values.entrySet()) {
-            builder.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
-        }
-
-        url = builder.toString();
-        final Request request = new Request.Builder()
-                .url(url)
-                .build();
-        request(request, listener);
+    public void get(String url, Map<String, String> values, final Listener<String> listener) {
+        request(url, values, listener, METHOD.GET);
     }
 
     @Override
-    public void post(String url, ArrayMap<String, String> values, final Listener<String> listener) {
+    public void post(String url, Map<String, String> values, final Listener<String> listener) {
+        request(url, values, listener, METHOD.POST);
+    }
+
+    @Override
+    public void request(String url, Map<String, String> values, Listener<String> listener,
+                        METHOD method) {
+        String m = method.name();
         try {
+            if (method == METHOD.GET) {
+                url = generateUrl(url, values);
+            }
             Request.Builder builder = new Request.Builder().url(url);
-            if (mType == PARAM_TYPE.FORM) {
-                builder.post(map2form(values));
-            }else if (mType == PARAM_TYPE.JSON) {
-                RequestBody body = RequestBody.create(MediaType.parse("json"), map2json(values));
-                builder.post(body);
+            switch (method) {
+                case GET:
+                    builder.get();
+                    break;
+                case HEAD:
+                    builder.head();
+                    break;
+                default:
+                    builder.method(m, generateForm(values));
             }
             request(builder.build(), listener);
         } catch (JSONException e) {
@@ -101,25 +102,6 @@ public class OKHttpNet implements IWNet {
         }
     }
 
-    @Override
-    public void uploadFile(String url, String key, String file, String type,
-                           final Listener<String> listener) {
-        File f = new File(file);
-        if (f.isDirectory()) {
-            listener.onFail("file " + file + " is a directory not file");
-        }else if (!f.exists()) {
-            listener.onFail("file " + file + " is not exists");
-        }else {
-            RequestBody body = new MultipartBody.Builder()
-                    .addFormDataPart(key, f.getName(), RequestBody.create(MediaType.parse(type), f))
-                    .build();
-            Request request = new Request.Builder()
-                    .url(url)
-                    .post(body)
-                    .build();
-            request(request, listener);
-        }
-    }
 
     @Override
     public void downloadFile(String url, final String file, final Listener<String> listener) {
@@ -130,12 +112,13 @@ public class OKHttpNet implements IWNet {
         mClient.newCall(request)
                 .enqueue(new Callback() {
                     @Override
-                    public void onFailure(Call call, IOException e) {
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
                         listener.onFail(e.getMessage());
                     }
 
                     @Override
-                    public void onResponse(Call call, Response response) throws IOException {
+                    public void onResponse(@NonNull Call call, @NonNull Response response)
+                            throws IOException {
                         if (response.isSuccessful()) {
                             InputStream is = response.body().byteStream();
                             boolean result = FileUtil.writeInputStream(file, is);
@@ -152,10 +135,18 @@ public class OKHttpNet implements IWNet {
     }
 
     @Override
-    public void uploadFile(String url, ArrayMap<String, String> values, ArrayMap<String,
-            String> files, String type, Listener<String> listener) {
+    public void uploadFile(String url, Map<String, String> values, Map<String,
+            String> files, List<String> types, Listener<String> listener) {
+        if (files.size() != types.size()) {
+            throw new IllegalArgumentException();
+        }
         MultipartBody.Builder builder = new MultipartBody.Builder();
-        builder.addPart(map2form(values));
+        try {
+            builder.addPart(generateForm(values, PARAM_TYPE.FORM));
+        } catch (JSONException ignored) {
+
+        }
+        int i = 0;
         for (Map.Entry<String, String> entry : files.entrySet()) {
             File file = new File(entry.getValue());
             if (file.isDirectory()) {
@@ -166,7 +157,7 @@ public class OKHttpNet implements IWNet {
                 return;
             }
             builder.addFormDataPart(entry.getKey(), file.getName(), RequestBody
-                    .create(MediaType.parse(type), file));
+                    .create(MediaType.parse(types.get(i++)), file));
         }
         Request request = new Request.Builder()
                 .url(url)
@@ -179,12 +170,13 @@ public class OKHttpNet implements IWNet {
         mClient.newCall(request)
                 .enqueue(new Callback() {
                     @Override
-                    public void onFailure(Call call, IOException e) {
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
                         listener.onFail(e.getMessage());
                     }
 
                     @Override
-                    public void onResponse(Call call, Response response) throws IOException {
+                    public void onResponse(@NonNull Call call, @NonNull Response response)
+                            throws IOException {
                         if (response.isSuccessful()) {
                             listener.onSuccessful(response.body().string());
                         }else {
@@ -194,19 +186,37 @@ public class OKHttpNet implements IWNet {
                 });
     }
 
-    private String map2json(ArrayMap<String, String> values) throws JSONException {
-        JSONObject object = new JSONObject();
+    private String generateUrl(String url, Map<String, String> values) {
+        StringBuilder builder = new StringBuilder(url);
+        builder.append("?");
         for (Map.Entry<String, String> entry : values.entrySet()) {
-            object.put(entry.getKey(), entry.getValue());
+            builder.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
         }
-        return object.toString();
+
+        return builder.toString();
     }
 
-    private FormBody map2form(ArrayMap<String, String> values) {
-        FormBody.Builder builder = new FormBody.Builder();
-        for (Map.Entry<String, String> entry : values.entrySet()) {
-            builder.add(entry.getKey(), entry.getValue());
+    private RequestBody generateForm(Map<String, String> values, PARAM_TYPE type)
+            throws JSONException {
+        switch (type) {
+            case FORM:
+                FormBody.Builder builder = new FormBody.Builder();
+                for (Map.Entry<String, String> entry : values.entrySet()) {
+                    builder.add(entry.getKey(), entry.getValue());
+                }
+                return builder.build();
+            case JSON:
+                JSONObject obj = new JSONObject();
+                for (Map.Entry<String, String> entry : values.entrySet()) {
+                    obj.put(entry.getKey(), entry.getValue());
+                }
+                return RequestBody.create(MediaType.parse("json"), obj.toString());
         }
-        return builder.build();
+
+        throw new IllegalArgumentException("unable handler type " + type);
+    }
+
+    private RequestBody generateForm(Map<String, String> values) throws JSONException {
+        return generateForm(values, mType);
     }
 }
