@@ -2,7 +2,7 @@ package com.wuruoye.library.util.net;
 
 
 import com.wuruoye.library.model.Listener;
-import com.wuruoye.library.ui.WBaseApp;
+import com.wuruoye.library.model.WConfig;
 import com.wuruoye.library.util.thread.WThreadPool;
 
 import java.util.Collections;
@@ -59,7 +59,7 @@ public class WNet {
                     get(url, values, new Listener<String>() {
                         @Override
                         public void onSuccessful(final String result) {
-                            WBaseApp.runOnMainThread(new Runnable() {
+                            WConfig.runOnUIThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     listener.onSuccessful(result);
@@ -69,7 +69,7 @@ public class WNet {
 
                         @Override
                         public void onFail(final String message) {
-                            WBaseApp.runOnMainThread(new Runnable() {
+                            WConfig.runOnUIThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     listener.onFail(message);
@@ -93,7 +93,7 @@ public class WNet {
                     post(url, values, new Listener<String>() {
                         @Override
                         public void onSuccessful(final String result) {
-                            WBaseApp.runOnMainThread(new Runnable() {
+                            WConfig.runOnUIThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     listener.onSuccessful(result);
@@ -103,7 +103,7 @@ public class WNet {
 
                         @Override
                         public void onFail(final String message) {
-                            WBaseApp.runOnMainThread(new Runnable() {
+                            WConfig.runOnUIThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     listener.onFail(message);
@@ -128,7 +128,7 @@ public class WNet {
                     request(url, values, new Listener<String>() {
                         @Override
                         public void onSuccessful(final String result) {
-                            WBaseApp.runOnMainThread(new Runnable() {
+                            WConfig.runOnUIThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     listener.onSuccessful(result);
@@ -138,7 +138,7 @@ public class WNet {
 
                         @Override
                         public void onFail(final String message) {
-                            WBaseApp.runOnMainThread(new Runnable() {
+                            WConfig.runOnUIThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     listener.onFail(message);
@@ -162,7 +162,7 @@ public class WNet {
                     uploadFile(url, key, file, type, new Listener<String>() {
                         @Override
                         public void onSuccessful(final String result) {
-                            WBaseApp.runOnMainThread(new Runnable() {
+                            WConfig.runOnUIThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     listener.onSuccessful(result);
@@ -172,7 +172,7 @@ public class WNet {
 
                         @Override
                         public void onFail(final String message) {
-                            WBaseApp.runOnMainThread(new Runnable() {
+                            WConfig.runOnUIThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     listener.onFail(message);
@@ -197,7 +197,7 @@ public class WNet {
                     uploadFile(url, values, files, types, new Listener<String>() {
                         @Override
                         public void onSuccessful(final String result) {
-                            WBaseApp.runOnMainThread(new Runnable() {
+                            WConfig.runOnUIThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     listener.onSuccessful(result);
@@ -207,7 +207,7 @@ public class WNet {
 
                         @Override
                         public void onFail(final String message) {
-                            WBaseApp.runOnMainThread(new Runnable() {
+                            WConfig.runOnUIThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     listener.onFail(message);

@@ -3,6 +3,8 @@ package com.wuruoye.library.model;
 import android.Manifest;
 import android.content.Context;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.wuruoye.library.util.log.WLog;
 import com.wuruoye.library.util.net.IWNet;
@@ -18,6 +20,8 @@ import com.wuruoye.library.util.thread.WThreadPool;
 
 public class WConfig {
     public static String PACKAGE_NAME;
+    public static Handler sMainHandler;
+    public static Context sAppContext;
 
     public static void init(Context context) {
         PACKAGE_NAME = context.getPackageName();
@@ -28,6 +32,9 @@ public class WConfig {
         VIDEO_PATH = APP_PATH + "video/";
         RECORD_PATH = APP_PATH + "record/";
         PROVIDER_AUTHORITY = PACKAGE_NAME + ".fileprovider";
+
+        sMainHandler = new Handler(Looper.getMainLooper());
+        sAppContext = context;
         WBaseCache.init(PACKAGE_NAME);
     }
 
@@ -41,6 +48,16 @@ public class WConfig {
 
     public static void setLog(boolean isLog) {
         WLog.IS_LOG = isLog;
+    }
+
+    public static void runOnUIThread(Runnable runnable) {
+        if (sMainHandler != null) {
+            sMainHandler.post(runnable);
+        }
+    }
+
+    public static Context getApp() {
+        return sAppContext;
     }
 
     public static String APP_PATH;

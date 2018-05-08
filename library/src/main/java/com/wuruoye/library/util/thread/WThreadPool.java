@@ -1,7 +1,7 @@
 package com.wuruoye.library.util.thread;
 
 import com.wuruoye.library.model.Listener;
-import com.wuruoye.library.ui.WBaseApp;
+import com.wuruoye.library.model.WConfig;
 
 import java.util.concurrent.Callable;
 
@@ -35,14 +35,14 @@ public class WThreadPool {
                 public void run() {
                     try {
                         final T result = sPool.exec(callable);
-                        WBaseApp.runOnMainThread(new Runnable() {
+                        WConfig.runOnUIThread(new Runnable() {
                             @Override
                             public void run() {
                                 listener.onSuccessful(result);
                             }
                         });
                     } catch (final Exception e) {
-                        WBaseApp.runOnMainThread(new Runnable() {
+                        WConfig.runOnUIThread(new Runnable() {
                             @Override
                             public void run() {
                                 listener.onFail(e.getMessage());

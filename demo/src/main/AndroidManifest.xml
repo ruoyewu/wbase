@@ -27,6 +27,7 @@
         <activity android:name=".PhotoActivity" />
         <activity android:name=".NetActivity" />
         <activity android:name=".HeartBeatActivity" />
+        <activity android:name=".SortActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

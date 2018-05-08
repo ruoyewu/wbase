@@ -8,7 +8,7 @@ import android.content.Context;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
-import com.wuruoye.library.ui.WBaseApp;
+import com.wuruoye.library.model.WConfig;
 
 
 /**
@@ -19,7 +19,7 @@ import com.wuruoye.library.ui.WBaseApp;
 public class KeyBoardUtil {
 
     public static void hideSoftKeyboard(View view) {
-        InputMethodManager manager = (InputMethodManager) WBaseApp.getApp()
+        InputMethodManager manager = (InputMethodManager) WConfig.getApp()
                 .getSystemService(Context.INPUT_METHOD_SERVICE);
         assert manager != null;
         manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -27,7 +27,7 @@ public class KeyBoardUtil {
 
     public static void showSoftKeBoard(View view) {
         if (view.requestFocus()) {
-            InputMethodManager manager = (InputMethodManager) WBaseApp.getApp()
+            InputMethodManager manager = (InputMethodManager) WConfig.getApp()
                     .getSystemService(Context.INPUT_METHOD_SERVICE);
             assert manager != null;
             manager.showSoftInput(view, InputMethodManager.SHOW_FORCED);

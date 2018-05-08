@@ -1,7 +1,8 @@
 package com.wuruoye.demo;
 
+import android.app.Application;
+
 import com.wuruoye.library.model.WConfig;
-import com.wuruoye.library.ui.WBaseApp;
 import com.wuruoye.library.util.net.OKHttpNet;
 import com.wuruoye.library.util.thread.DefaultThreadPool;
 
@@ -10,11 +11,12 @@ import com.wuruoye.library.util.thread.DefaultThreadPool;
  * this file is to
  */
 
-public class App extends WBaseApp {
+public class App extends Application {
 
     @Override
     public void onCreate() {
         super.onCreate();
+        WConfig.init(this);
         WConfig.initNet(new OKHttpNet());
         WConfig.initThreadPool(new DefaultThreadPool());
     }

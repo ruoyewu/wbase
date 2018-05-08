@@ -3,7 +3,6 @@ package com.wuruoye.library.model;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.wuruoye.library.ui.WBaseApp;
 
 /**
  * Created by wuruoye on 2017/11/20.
@@ -22,7 +21,7 @@ public abstract class WBaseCache {
     public WBaseCache() {
         if (mSP == null){
             synchronized (this){
-                mSP = WBaseApp.getApp().getSharedPreferences(SP_NAME,
+                mSP = WConfig.getApp().getSharedPreferences(SP_NAME,
                         Context.MODE_PRIVATE);
             }
         }
@@ -31,7 +30,7 @@ public abstract class WBaseCache {
     public WBaseCache(String name){
         if (mSP == null){
             synchronized (this){
-                mSP = WBaseApp.getApp().getSharedPreferences(SP_NAME + "_" + name,
+                mSP = WConfig.getApp().getSharedPreferences(SP_NAME + "_" + name,
                         Context.MODE_PRIVATE);
             }
         }
