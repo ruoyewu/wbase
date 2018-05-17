@@ -1,7 +1,7 @@
 package com.wuruoye.demo.presenter;
 
-import com.wuruoye.demo.App;
 import com.wuruoye.demo.contract.PresenterContract;
+import com.wuruoye.library.model.WConfig;
 
 /**
  * Created by wuruoye on 2018/3/21.
@@ -19,7 +19,7 @@ public class PresenterPresenter extends PresenterContract.Presenter {
                 public void run() {
                     for (int i = 1; i <= n; i++) {
                         final int finalI = i;
-                        App.runOnMainThread(new Runnable() {
+                        WConfig.runOnUIThread(new Runnable() {
                             @Override
                             public void run() {
                                 if (isAvailable()) {

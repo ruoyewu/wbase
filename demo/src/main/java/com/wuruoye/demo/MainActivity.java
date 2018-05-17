@@ -14,6 +14,7 @@ public class MainActivity extends WBaseActivity implements View.OnClickListener 
     private Button btnNet;
     private Button btnHeart;
     private Button btnSort;
+    private Button btnChangeTab;
 
     @Override
     protected int getContentView() {
@@ -33,6 +34,7 @@ public class MainActivity extends WBaseActivity implements View.OnClickListener 
         btnNet = findViewById(R.id.btn_main_net);
         btnHeart = findViewById(R.id.btn_main_heart);
         btnSort = findViewById(R.id.btn_main_sort);
+        btnChangeTab = findViewById(R.id.btn_main_change_tab);
 
         btnSLL.setOnClickListener(this);
         btnPresenter.setOnClickListener(this);
@@ -40,6 +42,7 @@ public class MainActivity extends WBaseActivity implements View.OnClickListener 
         btnNet.setOnClickListener(this);
         btnHeart.setOnClickListener(this);
         btnSort.setOnClickListener(this);
+        btnChangeTab.setOnClickListener(this);
     }
 
     @Override
@@ -68,6 +71,10 @@ public class MainActivity extends WBaseActivity implements View.OnClickListener 
                 break;
             case R.id.btn_main_sort:
                 intent = new Intent(this, SortActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.btn_main_change_tab:
+                intent = new Intent(this, ChangeTabActivity.class);
                 startActivity(intent);
                 break;
         }

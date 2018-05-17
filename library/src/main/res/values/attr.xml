@@ -13,4 +13,21 @@
         <attr name="count" format="integer"/>
         <attr name="press" format="float"/>
     </declare-styleable>
+
+    <declare-styleable name="ChangeTabItem">
+        <attr name="text" format="string"/>
+        <attr name="icon" format="reference"/>
+        <attr name="iconSelect" format="reference"/>
+        <attr name="imgLength" format="dimension"/>
+        <attr name="textSize" format="dimension"/>
+    </declare-styleable>
+
+    <declare-styleable name="ChangeTabLayout">
+        <attr name="normalTextColor" format="color"/>
+        <attr name="selectTextColor" format="color"/>
+        <attr name="normalBorderColor" format="color"/>
+        <attr name="selectBorderColor" format="color"/>
+        <attr name="normalStuffColor" format="color"/>
+        <attr name="selectStuffColor" format="color"/>
+    </declare-styleable>
 </resources>

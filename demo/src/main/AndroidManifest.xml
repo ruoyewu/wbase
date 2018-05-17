@@ -28,6 +28,7 @@
         <activity android:name=".NetActivity" />
         <activity android:name=".HeartBeatActivity" />
         <activity android:name=".SortActivity" />
+        <activity android:name=".ChangeTabActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

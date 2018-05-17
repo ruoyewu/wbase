@@ -3,9 +3,9 @@ package com.wuruoye.demo.presenter;
 
 import android.support.v4.util.ArrayMap;
 
-import com.wuruoye.demo.App;
 import com.wuruoye.demo.contract.NetContract;
 import com.wuruoye.library.model.Listener;
+import com.wuruoye.library.model.WConfig;
 import com.wuruoye.library.util.net.WNet;
 
 /**
@@ -26,7 +26,7 @@ public class NetPresenter extends NetContract.Presenter {
                 WNet.get(finalUrl, new ArrayMap<String, String>(), new Listener<String>() {
                     @Override
                     public void onSuccessful(final String result) {
-                        App.runOnMainThread(new Runnable() {
+                        WConfig.runOnUIThread(new Runnable() {
                             @Override
                             public void run() {
                                 if (isAvailable()) {
@@ -38,7 +38,7 @@ public class NetPresenter extends NetContract.Presenter {
 
                     @Override
                     public void onFail(final String message) {
-                        App.runOnMainThread(new Runnable() {
+                        WConfig.runOnUIThread(new Runnable() {
                             @Override
                             public void run() {
                                 if (isAvailable()) {
