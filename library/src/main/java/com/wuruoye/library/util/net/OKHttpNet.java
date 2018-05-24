@@ -167,23 +167,16 @@ public class OKHttpNet implements IWNet {
     }
 
     private void request(Request request, final Listener<String> listener) {
-        mClient.newCall(request)
-                .enqueue(new Callback() {
-                    @Override
-                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                        listener.onFail(e.getMessage());
-                    }
-
-                    @Override
-                    public void onResponse(@NonNull Call call, @NonNull Response response)
-                            throws IOException {
-                        if (response.isSuccessful()) {
-                            listener.onSuccessful(response.body().string());
-                        }else {
-                            listener.onFail(response.message());
-                        }
-                    }
-                });
+        try {
+            Response response = mClient.newCall(request).execute();
+            if (response.isSuccessful()) {
+                listener.onSuccessful(response.body().toString());
+            }else {
+                listener.onFail(response.message());
+            }
+        } catch (IOException e) {
+            listener.onFail(e.getMessage());
+        }
     }
 
     private String generateUrl(String url, Map<String, String> values) {
