@@ -8,6 +8,7 @@
     <com.wuruoye.library.widget.ChangeImageView
         android:id="@+id/civ_change_iv"
         app:civImg="@drawable/ic_check"
+        app:civDuration="300"
         android:src="@drawable/ic_setting"
         android:layout_gravity="center"
         android:layout_marginTop="50dp"

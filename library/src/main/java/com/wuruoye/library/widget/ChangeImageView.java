@@ -1,5 +1,6 @@
 package com.wuruoye.library.widget;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -25,9 +26,10 @@ import com.wuruoye.library.util.ResourceUtil;
  * @Date : 2018/5/24 22:05.
  * @Description : 可以左右旋转的 ImageView
  */
-public class ChangeImageView extends android.support.v7.widget.AppCompatImageView {
+public class ChangeImageView extends android.support.v7.widget.AppCompatImageView
+        implements ValueAnimator.AnimatorUpdateListener {
     public static final int MAX_ALPHA = 255;
-    public static final float DEFAULT_CLIP = 0.05F;
+    public static final int DEFAULT_DURATION = 300;
     public static final float DEFAULT_SCALE = 0.6F;
     public static final Interpolator DEFAULT_INTERPOLATOR = new AccelerateDecelerateInterpolator();
 
@@ -37,10 +39,9 @@ public class ChangeImageView extends android.support.v7.widget.AppCompatImageVie
     private int mImgTint;
     // 勾选图片资源
     private int mImg;
-    // 步进
-    private float mClip;
     // 勾选图片缩放
     private float mScale;
+    private long mDuration;
 
     // 圆形画笔
     private Paint mPaint;
@@ -50,8 +51,7 @@ public class ChangeImageView extends android.support.v7.widget.AppCompatImageVie
     private Rect mCheckRect;
     private RectF mAllRectF;
 
-    // 插值器
-    private Interpolator mInterpolator = DEFAULT_INTERPOLATOR;
+    private ValueAnimator mAnimator;
     private float mProgress;
     private int mLength;
     // 是否正在翻转
@@ -81,13 +81,18 @@ public class ChangeImageView extends android.support.v7.widget.AppCompatImageVie
         mImgTint = ta.getColor(R.styleable.ChangeImageView_civImgTint,
                 ResourceUtil.getColorAccent(context));
         mImg = ta.getResourceId(R.styleable.ChangeImageView_civImg, 0);
-        mClip = ta.getFloat(R.styleable.ChangeImageView_civClip, DEFAULT_CLIP);
+        mDuration = ta.getInteger(R.styleable.ChangeImageView_civDuration, DEFAULT_DURATION);
         mScale = ta.getFloat(R.styleable.ChangeImageView_civScale, DEFAULT_SCALE);
         ta.recycle();
     }
 
     // 初始化
     private void init() {
+        mAnimator = new ValueAnimator();
+        mAnimator.setDuration(mDuration);
+        mAnimator.setInterpolator(DEFAULT_INTERPOLATOR);
+        mAnimator.addUpdateListener(this);
+
         mAllRect = new Rect();
         mAllRectF = new RectF();
         mCheckRect = new Rect();
@@ -103,20 +108,18 @@ public class ChangeImageView extends android.support.v7.widget.AppCompatImageVie
 
     // 勾选开始
     public void select() {
-        mProgress = 0;
-        mIsChecking = true;
-        postInvalidate();
+        mAnimator.setFloatValues(0F, 1F, 1.5F);
+        mAnimator.start();
     }
 
     // 返回开始
     public void back() {
-        mProgress = 1;
-        mIsChecking = false;
-        postInvalidate();
+        mAnimator.setFloatValues(1.5F, 1F, 0F);
+        mAnimator.start();
     }
 
     public void setInterpolator(Interpolator interpolator) {
-        mInterpolator = interpolator;
+        mAnimator.setInterpolator(interpolator);
     }
 
     public void setTint(int tint) {
@@ -168,6 +171,12 @@ public class ChangeImageView extends android.support.v7.widget.AppCompatImageVie
         initDrawable();
     }
 
+    /**
+     * 画图，一次过程 {@link #mProgress} 的值变化范围是 [0, 1.5]，以开始勾选为例：
+     * 1. [0, 0.5] 此过程完成原图的 180° 旋转
+     * 2. [0.5, 1] 此过程完成勾选后的背景图的 180° 旋转
+     * 3. [1, 1.5] 此过程完成旋转完毕之后，勾选图的动画效果
+     */
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -184,19 +193,22 @@ public class ChangeImageView extends android.support.v7.widget.AppCompatImageVie
             canvas.scale(progress, 1, width, width);
 
             drawOriginImg(canvas);
-        }else {
+        }else if (progress >= 0.5 && progress < 1){
             // 0.5 ~ 1 -> 0 ~ 1
-            // 画勾选图片
+            // 画勾选背景
             progress = beforeSecond(progress);
             canvas.scale(progress, 1, width, width);
 
             canvas.drawOval(mAllRectF, mPaint);
+//            drawCheckImg(progress, canvas);
+        }else {
+            // 1 ~ 1.5 -> 0 ~ 1
+            // 画勾选图片和背景
+            canvas.drawOval(mAllRectF, mPaint);
+            progress = beforeThird(progress);
             drawCheckImg(progress, canvas);
         }
         canvas.restore();
-
-        // 更新 mProgress
-        afterDraw();
     }
 
     private void initDrawable() {
@@ -207,7 +219,7 @@ public class ChangeImageView extends android.support.v7.widget.AppCompatImageVie
     }
 
     private float getProgress() {
-        return mInterpolator.getInterpolation(mProgress);
+        return mProgress;
     }
 
     private float beforeFirst(float progress) {
@@ -216,6 +228,10 @@ public class ChangeImageView extends android.support.v7.widget.AppCompatImageVie
 
     private float beforeSecond(float progress) {
         return progress * 2 - 1;
+    }
+
+    private float beforeThird(float progress) {
+        return progress * 2 - 2;
     }
 
     private void drawOriginImg(Canvas canvas) {
@@ -248,30 +264,6 @@ public class ChangeImageView extends android.support.v7.widget.AppCompatImageVie
         return (int) (progress * MAX_ALPHA);
     }
 
-    private void afterDraw() {
-        if (mIsChecking) {
-            mProgress += mClip;
-            if (mProgress < 1) {
-                postInvalidate();
-            }else {
-                if (mProgress - 1 < mClip) {
-                    mProgress = 1;
-                    postInvalidate();
-                }
-            }
-        }else {
-            mProgress -= mClip;
-            if (mProgress > 0) {
-                postInvalidate();
-            }else {
-                if (mProgress > -mClip) {
-                    mProgress = 0;
-                    postInvalidate();
-                }
-            }
-        }
-    }
-
     // 保证控件是个方形
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -290,5 +282,12 @@ public class ChangeImageView extends android.support.v7.widget.AppCompatImageVie
         mAllRect.set(0, 0, w, w);
         mCheckRect.set(l, l, w - l, w - l);
         super.onSizeChanged(w, h, oldw, oldh);
+    }
+
+    @Override
+    public void onAnimationUpdate(ValueAnimator valueAnimator) {
+        float value = (float) valueAnimator.getAnimatedValue();
+        mProgress = value;
+        postInvalidate();
     }
 }
