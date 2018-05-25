@@ -41,7 +41,6 @@ public class HeartBeatView extends View {
 
     public HeartBeatView(Context context) {
         super(context);
-        init(null);
     }
 
     public HeartBeatView(Context context, @Nullable AttributeSet attrs) {

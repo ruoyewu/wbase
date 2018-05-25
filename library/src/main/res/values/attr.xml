@@ -30,4 +30,13 @@
         <attr name="normalStuffColor" format="color"/>
         <attr name="selectStuffColor" format="color"/>
     </declare-styleable>
+
+
+    <declare-styleable name="ChangeImageView">
+        <attr name="civTint" format="color"/>
+        <attr name="civImg" format="reference"/>
+        <attr name="civImgTint" format="color"/>
+        <attr name="civClip" format="float"/>
+        <attr name="civScale" format="float"/>
+    </declare-styleable>
 </resources>

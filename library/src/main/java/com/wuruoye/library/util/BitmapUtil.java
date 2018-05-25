@@ -4,8 +4,12 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PixelFormat;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.v8.renderscript.Allocation;
 import android.support.v8.renderscript.Element;
 import android.support.v8.renderscript.RenderScript;
@@ -61,7 +65,47 @@ public class BitmapUtil {
         return image;
     }
 
+    public static Bitmap rotationY(Context context, Bitmap bitmap, float rotation) {
+        Matrix matrix = new Matrix();
+        matrix.postScale(1, rotation);
+
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+                bitmap.getHeight(), matrix, true);
+    }
+
+    public static Bitmap rotationX(Context context, Bitmap bitmap, float rotation) {
+        Matrix matrix = new Matrix();
+        matrix.postScale(rotation, 1);
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(),
+                matrix, true);
+    }
+
+    public static Bitmap scale(Context context, Bitmap bitmap, float scale) {
+        Matrix matrix = new Matrix();
+        matrix.postScale(scale, scale);
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+    }
+
     public static Bitmap getFromView(View view) {
         return null;
+    }
+
+    public static Bitmap getFromDrawable(Drawable drawable) {
+        if (drawable == null) {
+            return null;
+        }
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable) drawable).getBitmap();
+        }else {
+            int w = drawable.getIntrinsicWidth();
+            int h = drawable.getIntrinsicHeight();
+            Bitmap.Config config = drawable.getOpacity() != PixelFormat.OPAQUE
+                    ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
+            Bitmap bitmap = Bitmap.createBitmap(w, h, config);
+            Canvas canvas = new Canvas(bitmap);
+            drawable.setBounds(0, 0, w, h);
+            drawable.draw(canvas);
+            return bitmap;
+        }
     }
 }
