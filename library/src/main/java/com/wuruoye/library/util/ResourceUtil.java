@@ -5,9 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.support.v4.app.ActivityCompat;
-import android.util.TypedValue;
-
-import com.wuruoye.library.R;
 
 
 /**
@@ -32,21 +29,4 @@ public class ResourceUtil {
         return BitmapFactory.decodeResource(context.getResources(), resourceId);
     }
 
-    public static int getColorPrimary(Context context) {
-        TypedValue value = new TypedValue();
-        context.getTheme().resolveAttribute(R.attr.colorPrimary, value, true);
-        return value.data;
-    }
-
-    public static int getColorPrimaryDark(Context context) {
-        TypedValue value = new TypedValue();
-        context.getTheme().resolveAttribute(R.attr.colorPrimaryDark, value, true);
-        return value.data;
-    }
-
-    public static int getColorAccent(Context context) {
-        TypedValue value = new TypedValue();
-        context.getTheme().resolveAttribute(R.attr.colorAccent, value, true);
-        return value.data;
-    }
 }

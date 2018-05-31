@@ -15,7 +15,6 @@ public class MainActivity extends WBaseActivity implements View.OnClickListener 
     private Button btnHeart;
     private Button btnSort;
     private Button btnChangeTab;
-    private Button btnChangeIV;
 
     @Override
     protected int getContentView() {
@@ -36,7 +35,6 @@ public class MainActivity extends WBaseActivity implements View.OnClickListener 
         btnHeart = findViewById(R.id.btn_main_heart);
         btnSort = findViewById(R.id.btn_main_sort);
         btnChangeTab = findViewById(R.id.btn_main_change_tab);
-        btnChangeIV = findViewById(R.id.btn_main_change_iv);
 
         btnSLL.setOnClickListener(this);
         btnPresenter.setOnClickListener(this);
@@ -45,7 +43,6 @@ public class MainActivity extends WBaseActivity implements View.OnClickListener 
         btnHeart.setOnClickListener(this);
         btnSort.setOnClickListener(this);
         btnChangeTab.setOnClickListener(this);
-        btnChangeIV.setOnClickListener(this);
     }
 
     @Override
@@ -78,10 +75,6 @@ public class MainActivity extends WBaseActivity implements View.OnClickListener 
                 break;
             case R.id.btn_main_change_tab:
                 intent = new Intent(this, ChangeTabActivity.class);
-                startActivity(intent);
-                break;
-            case R.id.btn_main_change_iv:
-                intent = new Intent(this, ChangeImageViewActivity.class);
                 startActivity(intent);
                 break;
         }

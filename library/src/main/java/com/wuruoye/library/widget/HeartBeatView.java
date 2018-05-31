@@ -11,7 +11,6 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.wuruoye.library.R;
-import com.wuruoye.library.util.log.WLog;
 
 /**
  * Created by wuruoye on 2018/3/21.
@@ -54,7 +53,6 @@ public class HeartBeatView extends View {
     }
 
     private void init(AttributeSet attrs) {
-        WLog.loge(this, "init");
         if (attrs == null) {
             initValue();
         }else {
@@ -123,7 +121,6 @@ public class HeartBeatView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        WLog.loge(this, "onDraw");
         super.onDraw(canvas);
         canvas.translate(mCenterY, mCenterX);
         canvas.scale(1, -1);
@@ -158,7 +155,6 @@ public class HeartBeatView extends View {
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        WLog.loge(this, "onSizeChanged");
         if (w > h) {
             super.onSizeChanged(h, h, oldw, oldh);
         }else {

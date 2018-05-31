@@ -12,17 +12,13 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.Cookie;
-import okhttp3.CookieJar;
 import okhttp3.FormBody;
-import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -37,29 +33,16 @@ import okhttp3.Response;
 
 public class OKHttpNet implements IWNet {
     private PARAM_TYPE mType = PARAM_TYPE.FORM;
-    private static List<Cookie> mCookies;
     private static OkHttpClient mClient;
 
     public OKHttpNet() {
-        mCookies = new ArrayList<>();
         mClient = new OkHttpClient.Builder()
                 .connectTimeout(WConfig.CONNECT_TIME_OUT, TimeUnit.SECONDS)
-                .cookieJar(new CookieJar() {
-                    @Override
-                    public void saveFromResponse(@NonNull HttpUrl url,
-                                                 @NonNull List<Cookie> cookies) {
-                        mCookies.clear();
-                        if (mCookies != null) {
-                            mCookies.addAll(cookies);
-                        }
-                    }
-
-                    @Override
-                    public List<Cookie> loadForRequest(@NonNull HttpUrl url) {
-                        return mCookies;
-                    }
-                })
                 .build();
+    }
+
+    public static OkHttpClient getClient() {
+        return mClient;
     }
 
     @Override
@@ -101,7 +84,6 @@ public class OKHttpNet implements IWNet {
             e.printStackTrace();
         }
     }
-
 
     @Override
     public void downloadFile(String url, final String file, final Listener<String> listener) {
@@ -170,7 +152,7 @@ public class OKHttpNet implements IWNet {
         try {
             Response response = mClient.newCall(request).execute();
             if (response.isSuccessful()) {
-                listener.onSuccessful(response.body().toString());
+                listener.onSuccessful(response.body().string());
             }else {
                 listener.onFail(response.message());
             }

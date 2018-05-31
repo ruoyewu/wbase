@@ -22,6 +22,10 @@ public class WNet {
         mNet = net;
     }
 
+    public static <T> T getNet() {
+        return (T)mNet;
+    }
+
     public static void setType(IWNet.PARAM_TYPE type) {
         mNet.setParamType(type);
     }
