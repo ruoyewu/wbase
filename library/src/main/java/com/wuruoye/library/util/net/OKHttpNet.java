@@ -45,6 +45,10 @@ public class OKHttpNet implements IWNet {
         return mClient;
     }
 
+    public static void setClient(OkHttpClient client) {
+        mClient = client;
+    }
+
     @Override
     public void setParamType(PARAM_TYPE type) {
         mType = type;
