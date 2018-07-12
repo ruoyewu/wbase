@@ -54,6 +54,7 @@ public class ChangeTabLayout extends LinearLayout {
 
     public void attachViewPager(ViewPager viewPager) {
         mViewPager = viewPager;
+        init();
     }
 
     private void init() {
