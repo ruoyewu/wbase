@@ -6,6 +6,7 @@ import android.content.res.TypedArray;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -54,7 +55,23 @@ public class ChangeTabLayout extends LinearLayout {
 
     public void attachViewPager(ViewPager viewPager) {
         mViewPager = viewPager;
-        init();
+        if (mViewPager != null) {
+            for (int i = 0; i < mTabItems.size(); i++) {
+                mTabItems.get(i).setTitle(mViewPager.getAdapter().getPageTitle(i).toString());
+            }
+            mViewPager.addOnPageChangeListener(new OnPageChangeListenerAdapter() {
+                @Override
+                public void onPageSelected(int position) {
+                    onPageChanged(position);
+                }
+
+                @Override
+                public void onPageScrolled(int position, float positionOffset,
+                                           int positionOffsetPixels) {
+                            onPageSlide(position, positionOffset);
+                }
+            });
+        }
     }
 
     private void init() {
@@ -90,21 +107,6 @@ public class ChangeTabLayout extends LinearLayout {
             if (view instanceof ChangeTabItem) {
                 ChangeTabItem item = (ChangeTabItem) view;
                 mTabItems.add(item);
-                if (mViewPager != null) {
-                    item.setTitle(mViewPager.getAdapter().getPageTitle(i).toString());
-                    mViewPager.addOnPageChangeListener(new OnPageChangeListenerAdapter() {
-                        @Override
-                        public void onPageSelected(int position) {
-                            onPageChanged(position);
-                        }
-
-                        @Override
-                        public void onPageScrolled(int position, float positionOffset,
-                                                   int positionOffsetPixels) {
-                            onPageSlide(position, positionOffset);
-                        }
-                    });
-                }
                 final int finalI = i;
                 item.setOnClickListener(new OnClickListener() {
                     @Override
@@ -129,6 +131,7 @@ public class ChangeTabLayout extends LinearLayout {
     }
 
     private void onPageSlide(int position, float offset) {
+        Log.e("ChangeTabLayout", "onPageSlide: " + offset);
         if (position < mTabItems.size() - 1) {
             int left = position;
             int right = position + 1;
@@ -153,6 +156,7 @@ public class ChangeTabLayout extends LinearLayout {
 
     private void onPageChanged(int position) {
         mCurrentTab = position;
+//        changeTabColor();
     }
 
     private int[] getColor(float progress) {

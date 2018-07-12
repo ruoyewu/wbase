@@ -33,6 +33,9 @@ public class ChangeTabItem extends LinearLayout {
     private int imgLength;
     private float textSize;
 
+    private Drawable mBorder;
+    private Drawable mStuff;
+
     public ChangeTabItem(Context context) {
         super(context);
         init();
@@ -73,6 +76,11 @@ public class ChangeTabItem extends LinearLayout {
 
         tv.setTextSize(textSize);
         tv.setText(text);
+
+        mBorder = new BitmapDrawable(getResources(),
+                BitmapFactory.decodeResource(getResources(), icon));
+        mStuff = new BitmapDrawable(getResources(),
+                BitmapFactory.decodeResource(getResources(), iconSelect));
     }
 
     private void setAttr(Context context, AttributeSet attr) {
@@ -87,18 +95,12 @@ public class ChangeTabItem extends LinearLayout {
 
     private Drawable getDrawable(int borColor, int stuColor, float process) {
         if (process <= 0.5) {
-            Drawable borderDrawable = new BitmapDrawable(getResources(),
-                    BitmapFactory.decodeResource(getResources(), icon));
-            DrawableCompat.setTint(borderDrawable, borColor);
-            return borderDrawable;
+            DrawableCompat.setTint(mBorder, borColor);
+            return mBorder;
         }else {
-            Drawable borderDrawable = new BitmapDrawable(getResources(),
-                    BitmapFactory.decodeResource(getResources(), icon));
-            Drawable stuffDrawable = new BitmapDrawable(getResources(),
-                    BitmapFactory.decodeResource(getResources(), iconSelect));
-            DrawableCompat.setTint(borderDrawable, borColor);
-            DrawableCompat.setTint(stuffDrawable, stuColor);
-            return new LayerDrawable(new Drawable[]{borderDrawable, stuffDrawable});
+            DrawableCompat.setTint(mBorder, borColor);
+            DrawableCompat.setTint(mStuff, stuColor);
+            return new LayerDrawable(new Drawable[]{mBorder, mStuff});
         }
     }
 }
