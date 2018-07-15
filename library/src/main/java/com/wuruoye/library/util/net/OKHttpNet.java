@@ -127,10 +127,8 @@ public class OKHttpNet implements IWNet {
             throw new IllegalArgumentException();
         }
         MultipartBody.Builder builder = new MultipartBody.Builder();
-        try {
-            builder.addPart(generateForm(values, PARAM_TYPE.FORM));
-        } catch (JSONException ignored) {
-
+        for (Map.Entry<String, String> entry : values.entrySet()) {
+            builder.addFormDataPart(entry.getKey(), entry.getValue());
         }
         int i = 0;
         for (Map.Entry<String, String> entry : files.entrySet()) {
