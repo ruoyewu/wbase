@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.v4.content.CursorLoader;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -60,6 +61,17 @@ public class FileUtil {
 
     public static boolean deleteFile(File file) {
         return file.delete();
+    }
+
+    public static String getFilePathByUri2(Context context, Uri uri) {
+        String[] proj = { MediaStore.Images.Media.DATA };
+        CursorLoader loader = new CursorLoader(context, uri, proj, null,
+                null, null);
+        Cursor cursor = loader.loadInBackground();
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
+
     }
 
     public static String getFilePathByUri(Context context, Uri uri) {

@@ -1,6 +1,7 @@
 package com.wuruoye.library.util.media;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -98,13 +99,25 @@ public class WPhoto implements IWPhoto<String> {
                         if (resultCode == RESULT_OK) {
                             Uri uri = data.getData();
                             if (mIsCrop){
-                                String filePath = FileUtil.getFilePathByUri(activity, uri);
+                                String filePath;
+                                try {
+                                    filePath = getPathFromUri(activity, uri);
+                                } catch (Exception e) {
+                                    listener.onPhotoError(e.getMessage());
+                                    return;
+                                }
                                 assert filePath != null;
                                 uri = FileProvider.getUriForFile(activity, WConfig.PROVIDER_AUTHORITY,
                                         new File(filePath));
                                 cropPhoto(uri, listener);
                             }else {
-                                String filePath = FileUtil.getFilePathByUri(activity, uri);
+                                String filePath = null;
+                                try {
+                                    filePath = getPathFromUri(activity, uri);
+                                } catch (Exception e) {
+                                    listener.onPhotoError(e.getMessage());
+                                    return;
+                                }
                                 listener.onPhotoResult(filePath);
                             }
                         }else {
@@ -343,5 +356,16 @@ public class WPhoto implements IWPhoto<String> {
                 listener.onPhotoError("没有用来剪裁图片的 Activity");
             }
         }
+    }
+
+    private String getPathFromUri(Context context, Uri uri) throws Exception {
+        String path = FileUtil.getFilePathByUri(context, uri);
+        if (path == null) {
+            path = FileUtil.getFilePathByUri2(context, uri);
+        }
+        if (path == null) {
+            throw new Exception("获取照片失败");
+        }
+        return path;
     }
 }
