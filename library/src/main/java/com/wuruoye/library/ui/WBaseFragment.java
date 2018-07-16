@@ -29,10 +29,16 @@ public abstract class WBaseFragment<T extends WIPresenter>
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(getContentView(), container, false);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        final View view = inflater.inflate(getContentView(), container, false);
         initData(getArguments());
-        initView(view);
+        view.post(new Runnable() {
+            @Override
+            public void run() {
+                initView(view);
+            }
+        });
         return view;
     }
 

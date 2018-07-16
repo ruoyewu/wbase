@@ -22,7 +22,7 @@ public class WNet {
         mNet = net;
     }
 
-    public static <T> T getNet() {
+    public static <T extends IWNet> T getNet() {
         return (T)mNet;
     }
 
