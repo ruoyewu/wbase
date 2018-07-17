@@ -1,8 +1,6 @@
 package com.wuruoye.library.util.net;
 
 
-import com.wuruoye.library.model.Listener;
-
 import java.util.List;
 import java.util.Map;
 
@@ -26,10 +24,11 @@ public interface IWNet {
         OPTIONS
     }
     void setParamType(PARAM_TYPE type);
-    void get(String url, Map<String, String> values, Listener<String> listener);
-    void post(String url, Map<String, String> values, Listener<String> listener);
-    void request(String url, Map<String, String> values, Listener<String> listener, METHOD method);
-    void downloadFile(String url, String file, Listener<String> listener);
-    void uploadFile(String url, Map<String, String> values, Map<String, String> files,
-                    List<String> types, Listener<String> listener);
+
+    String get(String url, Map<String, String> values) throws WNetException;
+    String post(String url, Map<String, String> values) throws WNetException;
+    String request(String url, Map<String, String> values, METHOD method) throws WNetException;
+    String downloadFile(String url, String file) throws WNetException;
+    String uploadFile(String url, Map<String, String> values, Map<String, String> files,
+                      List<String> types) throws WNetException;
 }

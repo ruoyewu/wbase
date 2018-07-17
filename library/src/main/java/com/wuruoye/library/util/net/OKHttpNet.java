@@ -1,8 +1,5 @@
 package com.wuruoye.library.util.net;
 
-import android.support.annotation.NonNull;
-
-import com.wuruoye.library.model.Listener;
 import com.wuruoye.library.model.WConfig;
 import com.wuruoye.library.util.FileUtil;
 
@@ -16,8 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -55,18 +50,17 @@ public class OKHttpNet implements IWNet {
     }
 
     @Override
-    public void get(String url, Map<String, String> values, final Listener<String> listener) {
-        request(url, values, listener, METHOD.GET);
+    public String get(String url, Map<String, String> values) throws WNetException {
+        return request(url, values, METHOD.GET);
     }
 
     @Override
-    public void post(String url, Map<String, String> values, final Listener<String> listener) {
-        request(url, values, listener, METHOD.POST);
+    public String post(String url, Map<String, String> values) throws WNetException {
+        return request(url, values, METHOD.POST);
     }
 
     @Override
-    public void request(String url, Map<String, String> values, Listener<String> listener,
-                        METHOD method) {
+    public String request(String url, Map<String, String> values, METHOD method) throws WNetException {
         String m = method.name();
         try {
             if (method == METHOD.GET) {
@@ -83,46 +77,39 @@ public class OKHttpNet implements IWNet {
                 default:
                     builder.method(m, generateForm(values));
             }
-            request(builder.build(), listener);
+            return request(builder.build());
         } catch (JSONException e) {
-            e.printStackTrace();
+            throw new WNetException(e.getMessage());
         }
     }
 
     @Override
-    public void downloadFile(String url, final String file, final Listener<String> listener) {
+    public String downloadFile(String url, String file) throws WNetException {
         Request request = new Request.Builder()
                 .url(url)
                 .build();
 
-        mClient.newCall(request)
-                .enqueue(new Callback() {
-                    @Override
-                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                        listener.onFail(e.getMessage());
-                    }
-
-                    @Override
-                    public void onResponse(@NonNull Call call, @NonNull Response response)
-                            throws IOException {
-                        if (response.isSuccessful()) {
-                            InputStream is = response.body().byteStream();
-                            boolean result = FileUtil.writeInputStream(file, is);
-                            if (result) {
-                                listener.onSuccessful(file);
-                            }else {
-                                listener.onFail("error in write file");
-                            }
-                        }else {
-                            listener.onFail(response.message());
-                        }
-                    }
-                });
+        try {
+            Response response = mClient.newCall(request).execute();
+            if (response.isSuccessful()) {
+                InputStream is = response.body().byteStream();
+                boolean result = FileUtil.writeInputStream(file, is);
+                if (result) {
+                    return file;
+                }else {
+                    throw new WNetException("error in write file");
+                }
+            }else {
+                throw new WNetException(response.message());
+            }
+        } catch (IOException e) {
+            throw new WNetException(e.getMessage());
+        }
     }
 
     @Override
-    public void uploadFile(String url, Map<String, String> values, Map<String,
-            String> files, List<String> types, Listener<String> listener) {
+    public String uploadFile(String url, Map<String, String> values, Map<String, String> files,
+                             List<String> types) throws WNetException{
         if (files.size() != types.size()) {
             throw new IllegalArgumentException();
         }
@@ -134,11 +121,9 @@ public class OKHttpNet implements IWNet {
         for (Map.Entry<String, String> entry : files.entrySet()) {
             File file = new File(entry.getValue());
             if (file.isDirectory()) {
-                listener.onFail("file " + entry.getValue() + " is a directory not file");
-                return;
+                throw new WNetException("file " + entry.getValue() + " is a directory not file");
             }else if (!file.exists()) {
-                listener.onFail("file " + entry.getValue() + " is not exists");
-                return;
+                throw new WNetException("file " + entry.getValue() + " is not exists");
             }
             builder.addFormDataPart(entry.getKey(), file.getName(), RequestBody
                     .create(MediaType.parse(types.get(i++)), file));
@@ -147,19 +132,19 @@ public class OKHttpNet implements IWNet {
                 .url(url)
                 .post(builder.build())
                 .build();
-        request(request, listener);
+        return request(request);
     }
 
-    private void request(Request request, final Listener<String> listener) {
+    private String request(Request request) throws WNetException {
         try {
             Response response = mClient.newCall(request).execute();
             if (response.isSuccessful()) {
-                listener.onSuccessful(response.body().string());
+                return response.body().string();
             }else {
-                listener.onFail(response.message());
+                throw new WNetException(response.message());
             }
         } catch (IOException e) {
-            listener.onFail(e.getMessage());
+            throw new WNetException(e.getMessage());
         }
     }
 
