@@ -36,7 +36,7 @@ public class FileUtil {
                 return file.getParentFile().mkdirs();
             }
         }
-        return false;
+        return true;
     }
 
     public static boolean writeInputStream(String filePath, InputStream is)

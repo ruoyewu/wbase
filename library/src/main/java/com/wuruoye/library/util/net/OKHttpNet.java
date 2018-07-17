@@ -21,6 +21,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import static okhttp3.MultipartBody.FORM;
+
 /**
  * Created by wuruoye on 2018/3/20.
  * 默认网络请求类
@@ -113,7 +115,7 @@ public class OKHttpNet implements IWNet {
         if (files.size() != types.size()) {
             throw new IllegalArgumentException();
         }
-        MultipartBody.Builder builder = new MultipartBody.Builder();
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(FORM);
         for (Map.Entry<String, String> entry : values.entrySet()) {
             builder.addFormDataPart(entry.getKey(), entry.getValue());
         }

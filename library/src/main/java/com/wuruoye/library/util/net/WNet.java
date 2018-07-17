@@ -54,6 +54,10 @@ public class WNet {
         return mNet.uploadFile(url, values, files, types);
     }
 
+    public static String downloadFile(String url, String filePath) throws WNetException {
+        return mNet.downloadFile(url, filePath);
+    }
+
     public static void getInBackground(final String url, final Map<String, String> values,
                                        final Listener<String> listener) {
         WThreadPool.execInBackground(new Callable<String>() {
@@ -142,6 +146,26 @@ public class WNet {
             @Override
             public String call() throws Exception {
                 return uploadFile(url, values, files, types);
+            }
+        }, new Listener<String>() {
+            @Override
+            public void onSuccessful(String result) {
+                listener.onSuccessful(result);
+            }
+
+            @Override
+            public void onFail(String message) {
+                listener.onFail(message);
+            }
+        });
+    }
+
+    public static void downloadFileInBackground(final String url, final String filePath,
+                                                final Listener<String> listener) {
+        WThreadPool.execInBackground(new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                return downloadFile(url, filePath);
             }
         }, new Listener<String>() {
             @Override
